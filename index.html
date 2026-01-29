@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Executive Control Dashboard 2026 - Realtime</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Executive Control Dashboard 2026 - Mobile Ready</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -11,7 +11,7 @@
         
         :root {
             --bg-main: #0b0f1a;
-            --card-bg: rgba(22, 30, 46, 0.8);
+            --card-bg: rgba(22, 30, 46, 0.9);
             --accent: #3b82f6;
         }
 
@@ -19,358 +19,362 @@
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: var(--bg-main);
             color: #f1f5f9;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .glass-panel {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 1.5rem;
         }
 
         .kpi-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .kpi-card:hover {
-            transform: translateY(-5px);
-            background: rgba(30, 41, 59, 0.9);
-            border-color: rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 1.25rem;
+            border: 2px solid;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .status-pill {
-            padding: 4px 10px;
+            padding: 8px 12px;
             border-radius: 8px;
-            font-size: 10px;
+            font-size: 13px;
             font-weight: 800;
             text-transform: uppercase;
             display: inline-block;
-            min-width: 100px;
+            min-width: 120px;
+            text-align: center;
         }
 
-        /* Colores de Alertas Dinámicas */
         .vencido { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
         .revisor { background: rgba(244, 114, 182, 0.15); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.2); }
         .tiempo { background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.2); }
         .ley { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.2); }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        #mobile-filters {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-100%);
+        }
+        #mobile-filters.active {
+            transform: translateX(0);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
         
-        select option { background: #0f172a; color: white; }
+        select { 
+            appearance: none; 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
+            background-repeat: no-repeat; 
+            background-position: right 1rem center; 
+            background-size: 1em; 
+        }
     </style>
 </head>
 <body class="antialiased overflow-x-hidden">
 
     <!-- Loader -->
     <div id="loader" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0b0f1a]">
-        <div class="relative w-16 h-16 border-4 border-blue-500/20 rounded-full border-t-blue-500 animate-spin"></div>
-        <p class="mt-4 text-blue-400 font-bold tracking-widest text-[10px]">CONECTANDO A GOOGLE SHEETS...</p>
+        <div class="relative w-12 h-12 border-4 border-blue-500/20 rounded-full border-t-blue-500 animate-spin"></div>
+        <p class="mt-4 text-blue-400 font-bold tracking-widest text-[10px]">CARGANDO DATOS...</p>
     </div>
+
+    <!-- Menú de Filtros Móvil -->
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 z-[60] hidden backdrop-blur-sm"></div>
+    <aside id="mobile-filters" class="fixed top-0 left-0 h-full w-[85%] max-w-xs bg-[#0f172a] z-[70] p-6 shadow-2xl lg:hidden overflow-y-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="font-black text-blue-500 uppercase tracking-tighter text-xl">Filtros de Control</h2>
+            <button onclick="toggleMobileMenu()" class="text-slate-400 p-2"><i class="fas fa-times text-2xl"></i></button>
+        </div>
+        
+        <div class="space-y-6" id="mobile-filter-container"></div>
+
+        <div class="mt-10 pt-6 border-t border-white/10 space-y-4">
+            <button onclick="fetchData(); toggleMobileMenu();" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl text-sm shadow-lg active:scale-95 transition-transform">
+                ACTUALIZAR DATOS
+            </button>
+            <button onclick="resetFilters(); toggleMobileMenu();" class="w-full text-slate-500 font-bold py-2 text-sm uppercase tracking-widest">
+                LIMPIAR FILTROS
+            </button>
+        </div>
+    </aside>
 
     <div class="flex h-screen overflow-hidden">
         
-        <!-- Sidebar -->
-        <aside class="w-72 glass-panel m-4 flex flex-col hidden lg:flex shadow-2xl">
+        <!-- Sidebar Escritorio -->
+        <aside class="w-72 glass-panel m-4 flex flex-col hidden lg:flex shadow-2xl rounded-3xl shrink-0">
             <div class="p-6">
-                <div class="flex items-center gap-3 mb-10 px-2">
-                    <div class="bg-blue-600 p-2 rounded-lg shadow-lg shadow-blue-500/20">
-                        <i class="fas fa-database text-white text-sm"></i>
-                    </div>
-                    <h2 class="font-black text-lg tracking-tight uppercase">Dashboard <span class="text-blue-500">Live</span></h2>
+                <div class="flex items-center gap-3 mb-10">
+                    <div class="bg-blue-600 p-2 rounded-lg"><i class="fas fa-shield-alt text-white"></i></div>
+                    <h2 class="font-black text-lg uppercase">Reparto <span class="text-blue-500">2026</span></h2>
                 </div>
-
-                <div class="space-y-6">
-                    <div>
-                        <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3 block">Grupo de Trabajo (G)</label>
-                        <select id="filterGIT" onchange="handleFilterChange('GIT')" class="w-full bg-slate-900 border-none rounded-xl p-3 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                            <option value="ALL">TODOS LOS GRUPOS</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3 block">Coordinación (I)</label>
-                        <select id="filterCoord" onchange="handleFilterChange('COORD')" class="w-full bg-slate-900 border-none rounded-xl p-3 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                            <option value="ALL">TODOS LOS COORDINADORES</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3 block">Abogado Responsable (D)</label>
-                        <select id="filterAbogado" onchange="handleFilterChange('ABOG')" class="w-full bg-slate-900 border-none rounded-xl p-3 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                            <option value="ALL">TODOS LOS ABOGADOS</option>
-                        </select>
-                    </div>
-                </div>
+                <div class="space-y-6" id="desktop-filter-container"></div>
             </div>
-            
             <div class="mt-auto p-6 space-y-4">
-                <div class="bg-white/5 p-4 rounded-xl border border-white/5">
-                    <p class="text-[9px] font-bold text-slate-400 mb-1">HOJA DE ORIGEN</p>
-                    <p class="text-[10px] text-blue-400 font-medium truncate">Control Reparto 2026</p>
-                    <p id="syncTime" class="text-[10px] font-mono text-emerald-400 mt-2">Sincronizado: --:--</p>
-                </div>
-                <button onclick="fetchData()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl transition-all shadow-lg active:scale-95 text-xs flex items-center justify-center gap-2">
-                    <i class="fas fa-sync-alt animate-pulse"></i> FORZAR ACTUALIZACIÓN
-                </button>
-                <button onclick="resetFilters()" class="w-full text-slate-500 text-[10px] font-bold py-2 hover:text-white transition-all">
-                    LIMPIAR FILTROS
+                <p id="syncTime" class="text-[10px] font-mono text-emerald-400 text-center uppercase tracking-widest">Sincronizado: --:--</p>
+                <button onclick="fetchData()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl transition-all shadow-lg text-sm">
+                    FORZAR ACTUALIZACIÓN
                 </button>
             </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Contenido Principal -->
         <main class="flex-1 overflow-y-auto p-4 lg:p-8">
             
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <div>
-                    <h1 class="text-3xl font-black tracking-tight">Control de <span class="text-blue-500">Reparto</span></h1>
-                    <p id="currentDate" class="text-slate-500 text-xs font-bold uppercase mt-1 tracking-widest"></p>
+            <header class="flex flex-col gap-4 mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl lg:text-4xl font-black tracking-tight">Control de <span class="text-blue-500">Reparto</span></h1>
+                        <p id="currentDate" class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1"></p>
+                    </div>
+                    <button onclick="toggleMobileMenu()" class="lg:hidden bg-blue-600/20 text-blue-500 px-5 py-3 rounded-xl border border-blue-500/30 font-black text-sm flex items-center gap-2">
+                        <i class="fas fa-filter"></i> FILTROS
+                    </button>
                 </div>
-                <div class="relative group">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-                    <input type="text" id="mainSearch" placeholder="Buscar por entidad o abogado..." class="bg-slate-900 border-none rounded-xl pl-12 pr-5 py-4 text-xs outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-80 shadow-2xl">
+                <div class="relative w-full">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
+                    <input type="text" id="mainSearch" placeholder="Buscar entidad o abogado..." class="bg-slate-900/50 border border-white/10 rounded-2xl pl-12 pr-5 py-5 text-lg outline-none focus:ring-2 focus:ring-blue-500 w-full shadow-inner text-white">
                 </div>
             </header>
 
             <!-- KPIs -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div class="glass-panel p-5 kpi-card border-l-4 border-red-500">
-                    <p class="text-[9px] font-black text-slate-400 uppercase mb-2">Vencidos Abogado (Col E)</p>
-                    <div class="flex items-end gap-2">
-                        <span id="kpi-venc-abog" class="text-4xl font-black text-red-500">0</span>
-                        <span class="text-[10px] text-slate-500 mb-2">Alertas</span>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                <div class="kpi-card border-pink-500/50 bg-pink-500/5">
+                    <p class="text-[10px] font-black text-pink-400 uppercase mb-1">Total en revisión pero vencido</p>
+                    <span id="kpi-1" class="text-4xl font-black text-pink-500">0</span>
                 </div>
-                <div class="glass-panel p-5 kpi-card border-l-4 border-purple-600">
-                    <p class="text-[9px] font-black text-slate-400 uppercase mb-2">Vencidos Ley/Trámite (Col F)</p>
-                    <div class="flex items-end gap-2">
-                        <span id="kpi-venc-critico" class="text-4xl font-black text-purple-500">0</span>
-                        <span class="text-[10px] text-slate-500 mb-2">Críticos</span>
-                    </div>
+                <div class="kpi-card border-red-500/50 bg-red-500/5">
+                    <p class="text-[10px] font-black text-red-400 uppercase mb-1">⚠️ Vencido: Proyección (Abogado)</p>
+                    <span id="kpi-2" class="text-4xl font-black text-red-500">0</span>
                 </div>
-                <div class="glass-panel p-5 kpi-card border-l-4 border-pink-500">
-                    <p class="text-[9px] font-black text-slate-400 uppercase mb-2">En Revisión Vencidos</p>
-                    <div class="flex items-end gap-2">
-                        <span id="kpi-rev-vencido" class="text-4xl font-black text-pink-500">0</span>
-                    </div>
+                <div class="kpi-card border-red-700/50 bg-red-900/10">
+                    <p class="text-[10px] font-black text-red-500 uppercase mb-1">⚠️ Trámites Vencidos</p>
+                    <span id="kpi-3" class="text-4xl font-black text-red-600">0</span>
                 </div>
-                <div class="glass-panel p-5 kpi-card border-l-4 border-blue-500">
-                    <p class="text-[9px] font-black text-slate-400 uppercase mb-2">Total Trámites Mostrados</p>
-                    <div class="flex items-end gap-2">
-                        <span id="kpi-total" class="text-4xl font-black text-blue-500">0</span>
-                    </div>
+                <div class="kpi-card border-orange-500/50 bg-orange-500/5">
+                    <p class="text-[10px] font-black text-orange-400 uppercase mb-1">Cantidad de trámites a revisar</p>
+                    <span id="kpi-4" class="text-4xl font-black text-orange-500">0</span>
+                </div>
+                <div class="kpi-card border-yellow-500/50 bg-yellow-500/5">
+                    <p class="text-[10px] font-black text-yellow-400 uppercase mb-1">Dentro del tiempo pero sin proyectar</p>
+                    <span id="kpi-5" class="text-4xl font-black text-yellow-500">0</span>
                 </div>
             </div>
 
             <!-- Tabla -->
-            <div class="glass-panel overflow-hidden shadow-2xl">
+            <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl">
                 <div class="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                    <div class="flex items-center gap-3">
-                        <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                        <h3 class="font-black text-xs uppercase tracking-[0.2em] text-slate-300">Monitoreo de Carga en Tiempo Real</h3>
-                    </div>
-                    <span id="rowCount" class="text-[10px] font-bold text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-white/5 uppercase">0 Trámites</span>
+                    <span class="text-sm font-bold text-slate-300 uppercase tracking-widest"><i class="fas fa-list-ul mr-2 text-blue-500"></i>Listado de Trámites</span>
+                    <span id="rowCount" class="text-xs bg-blue-600/20 text-blue-400 px-4 py-2 rounded-md font-black italic">0 REGISTROS</span>
                 </div>
-                <div class="overflow-x-auto max-h-[600px]">
-                    <table class="w-full text-left border-separate border-spacing-0">
-                        <thead class="sticky top-0 bg-[#161e2e] z-20 shadow-xl">
-                            <tr class="text-[10px] font-black text-slate-500 uppercase tracking-wider">
-                                <th class="px-6 py-5 border-b border-white/5">Entidad</th>
-                                <th class="px-6 py-5 border-b border-white/5">Municipio</th>
-                                <th class="px-6 py-5 border-b border-white/5">Trámite / Proceso</th>
-                                <th class="px-6 py-5 border-b border-white/5">Abogado Asignado</th>
-                                <th class="px-6 py-5 border-b border-white/5 text-center">E: Alerta Abog.</th>
-                                <th class="px-6 py-5 border-b border-white/5 text-center">F: Alerta Ley</th>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-separate border-spacing-0 min-w-[1000px]">
+                        <thead>
+                            <tr class="text-[13px] font-black text-slate-400 uppercase tracking-widest bg-slate-900/80">
+                                <th class="px-8 py-6 border-b border-white/5">Entidad / Ubicación</th>
+                                <th class="px-8 py-6 border-b border-white/5">Trámite / Proceso</th>
+                                <th class="px-8 py-6 border-b border-white/5">Responsable</th>
+                                <th class="px-8 py-6 border-b border-white/5 text-center">Alerta Abog</th>
+                                <th class="px-8 py-6 border-b border-white/5 text-center">Alerta Ley</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody" class="divide-y divide-white/5">
-                            <!-- Datos inyectados por JS -->
-                        </tbody>
+                        <tbody id="tableBody" class="divide-y divide-white/5"></tbody>
                     </table>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Template para los selectores de filtros -->
+    <template id="filter-group-template">
+        <div class="filter-item mb-6">
+            <label class="filter-label text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2 block"></label>
+            <select class="filter-select w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white outline-none focus:ring-1 focus:ring-blue-500 shadow-lg">
+                <option value="ALL"></option>
+            </select>
+        </div>
+    </template>
+
     <script>
-        // CONFIGURACIÓN DE CONEXIÓN A GOOGLE SHEETS
         const sheetId = '1NTz2GHYql5JnbqlImPbR4gd0bNl4LZlXBiTEzNvl6Uo';
-        const gid = '993887843'; // ID de la pestaña Control Reparto
+        const gid = '993887843';
         const dataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}`;
         
         let fullData = [];
         let selections = { git: 'ALL', coord: 'ALL', abog: 'ALL' };
 
-        // Función para cargar los datos desde la nube de Google
+        function setupFilters() {
+            const containers = ['desktop-filter-container', 'mobile-filter-container'];
+            const filterConfigs = [
+                { label: 'Grupo (G)', type: 'GIT', default: 'TODOS LOS GRUPOS' },
+                { label: 'Coordinación (I)', type: 'COORD', default: 'TODAS LAS COORDS' },
+                { label: 'Abogado (D)', type: 'ABOG', default: 'TODOS LOS ABOGADOS' }
+            ];
+
+            containers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                container.innerHTML = ''; 
+
+                filterConfigs.forEach(config => {
+                    const template = document.getElementById('filter-group-template').content.cloneNode(true);
+                    const label = template.querySelector('.filter-label');
+                    const select = template.querySelector('.filter-select');
+
+                    label.textContent = config.label;
+                    select.setAttribute('data-type', config.type);
+                    select.options[0].textContent = config.default;
+
+                    select.addEventListener('change', (e) => {
+                        const type = e.target.getAttribute('data-type');
+                        const val = e.target.value;
+                        document.querySelectorAll(`.filter-select[data-type="${type}"]`).forEach(s => s.value = val);
+                        selections[type.toLowerCase()] = val;
+                        if (type === 'GIT') { selections.coord = 'ALL'; selections.abog = 'ALL'; }
+                        if (type === 'COORD') { selections.abog = 'ALL'; }
+                        updateAllDropdowns();
+                        applyFilters();
+                    });
+
+                    container.appendChild(template);
+                });
+            });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-filters');
+            const overlay = document.getElementById('mobile-overlay');
+            menu.classList.toggle('active');
+            overlay.classList.toggle('hidden');
+        }
+
         async function fetchData() {
             document.getElementById('loader').classList.remove('hidden');
             try {
                 const response = await fetch(dataUrl);
                 const text = await response.text();
-                // Limpiar el JSON de Google que viene con basura al inicio y final
                 const jsonText = text.substring(47).slice(0, -2);
                 const json = JSON.parse(jsonText);
                 const rows = json.table.rows;
 
-                // Mapear filas a objetos legibles
                 fullData = rows.map(r => {
                     const getV = (idx) => (r.c[idx] ? (r.c[idx].f || r.c[idx].v || '').toString().trim() : '');
                     return {
-                        entidad: getV(0),      // Columna A
-                        municipio: getV(1),    // Columna B
-                        tramite: getV(2),      // Columna C
-                        abogado: getV(3),      // Columna D
-                        alertaE: getV(4),      // Columna E (Alerta Abogado)
-                        alertaF: getV(5),      // Columna F (Alerta Trámite/Ley)
-                        git: getV(6),          // Columna G (Grupo)
-                        sector: getV(7),       // Columna H (Sector)
-                        coordinador: getV(8)   // Columna I (Tu nueva fórmula de coordinadores)
+                        entidad: getV(0), municipio: getV(1), tramite: getV(2), abogado: getV(3),
+                        alertaE: getV(4), alertaF: getV(5), git: getV(6), sector: getV(7), coordinador: getV(8)
                     };
                 }).filter(d => d.entidad !== '' && d.entidad !== 'NOMBRE DE LA ENTIDAD');
 
                 updateAllDropdowns();
                 applyFilters();
-                
-                document.getElementById('syncTime').innerText = `Sincronizado: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            } catch (error) {
-                console.error("Error cargando base:", error);
-                alert("No se pudo conectar con la base de datos de Google Sheets.");
-            } finally {
-                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('syncTime').innerText = `Sync: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            } catch (error) { 
+                console.error("Error:", error); 
+            } finally { 
+                document.getElementById('loader').classList.add('hidden'); 
             }
         }
 
         function updateAllDropdowns() {
-            const gitSelect = document.getElementById('filterGIT');
-            const coordSelect = document.getElementById('filterCoord');
-            const abogSelect = document.getElementById('filterAbogado');
+            const gitItems = [...new Set(fullData.map(d => d.git).filter(v => v))].sort();
+            const coordItems = [...new Set(fullData.filter(d => (selections.git === 'ALL' || d.git.toUpperCase() === selections.git)).map(d => d.coordinador).filter(v => v))].sort();
+            const abogItems = [...new Set(fullData.filter(d => (selections.git === 'ALL' || d.git.toUpperCase() === selections.git) && (selections.coord === 'ALL' || d.coordinador.toUpperCase().includes(selections.coord))).map(d => d.abogado).filter(v => v))].sort();
 
-            const filteredForCoord = fullData.filter(d => 
-                (selections.git === 'ALL' || d.git.toUpperCase() === selections.git)
-            );
-
-            const filteredForAbog = fullData.filter(d => 
-                (selections.git === 'ALL' || d.git.toUpperCase() === selections.git) &&
-                (selections.coord === 'ALL' || d.coordinador.toUpperCase().includes(selections.coord))
-            );
-
-            populateSelect(gitSelect, [...new Set(fullData.map(d => d.git).filter(v => v))].sort(), selections.git);
-            populateSelect(coordSelect, [...new Set(filteredForCoord.map(d => d.coordinador).filter(v => v))].sort(), selections.coord);
-            populateSelect(abogSelect, [...new Set(filteredForAbog.map(d => d.abogado).filter(v => v))].sort(), selections.abog);
+            populateAllSelectors('GIT', gitItems, selections.git);
+            populateAllSelectors('COORD', coordItems, selections.coord);
+            populateAllSelectors('ABOG', abogItems, selections.abog);
         }
 
-        function populateSelect(select, items, currentVal) {
-            const defaultText = select.options[0].text;
-            select.innerHTML = `<option value="ALL">${defaultText}</option>`;
-            items.forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = item.toUpperCase();
-                opt.textContent = item;
-                if (opt.value === currentVal) opt.selected = true;
-                select.appendChild(opt);
+        function populateAllSelectors(type, items, currentVal) {
+            document.querySelectorAll(`.filter-select[data-type="${type}"]`).forEach(select => {
+                const defaultText = select.options[0].text;
+                select.innerHTML = `<option value="ALL">${defaultText}</option>`;
+                items.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.toUpperCase();
+                    opt.textContent = item;
+                    if (opt.value === currentVal) opt.selected = true;
+                    select.appendChild(opt);
+                });
             });
-        }
-
-        function handleFilterChange(type) {
-            selections.git = document.getElementById('filterGIT').value;
-            selections.coord = document.getElementById('filterCoord').value;
-            selections.abog = document.getElementById('filterAbogado').value;
-
-            if (type === 'GIT') { selections.coord = 'ALL'; selections.abog = 'ALL'; }
-            if (type === 'COORD') { selections.abog = 'ALL'; }
-
-            updateAllDropdowns();
-            applyFilters();
         }
 
         function resetFilters() {
             selections = { git: 'ALL', coord: 'ALL', abog: 'ALL' };
             document.getElementById('mainSearch').value = '';
+            document.querySelectorAll('.filter-select').forEach(s => s.value = 'ALL');
             updateAllDropdowns();
             applyFilters();
         }
 
         function applyFilters() {
             const search = document.getElementById('mainSearch').value.toLowerCase();
-
             let filtered = fullData.filter(d => {
-                const dGit = d.git.toUpperCase();
-                const dCoord = d.coordinador.toUpperCase();
-                const dAbog = d.abogado.toUpperCase();
-
-                if (selections.git !== 'ALL' && dGit !== selections.git) return false;
-                if (selections.coord !== 'ALL' && !dCoord.includes(selections.coord)) return false;
-                if (selections.abog !== 'ALL' && dAbog !== selections.abog) return false;
+                if (selections.git !== 'ALL' && d.git.toUpperCase() !== selections.git) return false;
+                if (selections.coord !== 'ALL' && !d.coordinador.toUpperCase().includes(selections.coord)) return false;
+                if (selections.abog !== 'ALL' && d.abogado.toUpperCase() !== selections.abog) return false;
                 if (search && !d.entidad.toLowerCase().includes(search) && !d.abogado.toLowerCase().includes(search)) return false;
                 return true;
             });
-
             renderUI(filtered);
         }
 
-        function getStatusClass(text) {
-            const t = text.toUpperCase();
-            if (t.includes('VENCIDO')) return 'vencido';
-            if (t.includes('REVISOR')) return 'revisor';
-            if (t.includes('TIEMPO')) return 'tiempo';
-            if (t.includes('LEY')) return 'ley';
-            return 'bg-slate-700/30 text-slate-400';
-        }
-
         function renderUI(data) {
-            // Cálculos KPI
-            const revVencidos = data.filter(d => d.alertaE.toUpperCase().includes('REVISOR') && d.alertaF.toUpperCase().includes('VENCIDO')).length;
-            const vencAbogado = data.filter(d => d.alertaE.toUpperCase().includes('VENCIDO')).length;
-            const vencCritico = data.filter(d => d.alertaF.toUpperCase().includes('VENCIDO') || d.alertaF.toUpperCase().includes('LEY')).length;
+            // KPI 1: En revisión Y Vencido Ley
+            document.getElementById('kpi-1').innerText = data.filter(d => d.alertaE.toUpperCase().includes('REVISOR') && d.alertaF.toUpperCase().includes('VENCIDO')).length;
+            
+            // KPI 2: Vencido Abogado
+            document.getElementById('kpi-2').innerText = data.filter(d => d.alertaE.toUpperCase().includes('VENCIDO')).length;
+            
+            // KPI 3: Vencido Ley
+            document.getElementById('kpi-3').innerText = data.filter(d => d.alertaF.toUpperCase().includes('VENCIDO')).length;
+            
+            // KPI 4: Cantidad de trámites a revisar (TOTAL DE LA LISTA FILTRADA)
+            document.getElementById('kpi-4').innerText = data.length;
+            
+            // KPI 5: Dentro del tiempo (Columna F / Alerta Ley)
+            document.getElementById('kpi-5').innerText = data.filter(d => d.alertaF.toUpperCase().includes('TIEMPO')).length;
+            
+            document.getElementById('rowCount').innerText = `${data.length} REGISTROS`;
 
-            document.getElementById('kpi-rev-vencido').innerText = revVencidos;
-            document.getElementById('kpi-venc-abog').innerText = vencAbogado;
-            document.getElementById('kpi-venc-critico').innerText = vencCritico;
-            document.getElementById('kpi-total').innerText = data.length;
-            document.getElementById('rowCount').innerText = `${data.length} Trámites`;
+            const getStatusClass = (t) => {
+                t = t.toUpperCase();
+                if (t.includes('VENCIDO')) return 'vencido';
+                if (t.includes('REVISOR')) return 'revisor';
+                if (t.includes('TIEMPO')) return 'tiempo';
+                if (t.includes('LEY')) return 'ley';
+                return 'bg-slate-700/30 text-slate-500';
+            };
 
             const tbody = document.getElementById('tableBody');
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-20 text-center text-slate-500 font-bold uppercase tracking-widest">No se encontraron registros con estos filtros</td></tr>`;
-                return;
-            }
-
             tbody.innerHTML = data.map(d => `
-                <tr class="hover:bg-white/[0.03] transition-colors group">
-                    <td class="px-6 py-4">
-                        <div class="text-[11px] font-extrabold text-slate-200 leading-tight">${d.entidad}</div>
-                        <div class="text-[9px] text-slate-600 mt-1 uppercase font-bold">${d.git || 'N/A'}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="text-[10px] text-slate-500 font-medium">${d.municipio}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="text-[10px] text-slate-400 max-w-xs truncate font-medium">${d.tramite}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex flex-col">
-                            <span class="text-[10px] font-bold text-blue-400 italic">${d.abogado}</span>
-                            <span class="text-[8px] text-slate-500 uppercase">Coord: ${d.coordinador}</span>
+                <tr class="hover:bg-white/[0.04] transition-colors">
+                    <td class="px-8 py-8">
+                        <div class="font-extrabold text-white uppercase text-sm leading-tight mb-1">${d.entidad}</div>
+                        <div class="flex flex-col gap-0.5">
+                            <div class="text-[11px] text-blue-400 font-black tracking-widest uppercase italic">${d.git || 'N/A'}</div>
+                            <div class="text-[11px] text-slate-400 font-bold uppercase tracking-tight italic">📍 ${d.municipio}</div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="status-pill ${getStatusClass(d.alertaE)}">${d.alertaE}</span>
+                    <td class="px-8 py-8">
+                        <div class="text-slate-300 text-sm font-medium max-w-md leading-relaxed">${d.tramite}</div>
                     </td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="status-pill ${getStatusClass(d.alertaF)}">${d.alertaF}</span>
+                    <td class="px-8 py-8">
+                        <div class="text-blue-300 font-black uppercase text-[13px] mb-1 tracking-wide">${d.abogado || 'SIN ASIGNAR'}</div>
+                        <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Coord: ${d.coordinador}</div>
                     </td>
+                    <td class="px-8 py-8 text-center"><span class="status-pill ${getStatusClass(d.alertaE)}">${d.alertaE}</span></td>
+                    <td class="px-8 py-8 text-center"><span class="status-pill ${getStatusClass(d.alertaF)}">${d.alertaF}</span></td>
                 </tr>
             `).join('');
         }
 
-        // Búsqueda en tiempo real
         document.getElementById('mainSearch').addEventListener('input', applyFilters);
-
-        // Inicialización
+        
         window.onload = () => {
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('es-ES', options);
+            setupFilters();
+            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             fetchData();
         };
     </script>
