@@ -68,9 +68,26 @@
             appearance: none; 
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
             background-repeat: no-repeat; 
-            background-position: right 1rem center; 
+            background-position: right 0.5rem center; 
             background-size: 1em; 
         }
+
+        /* Estilo para los selectores en la cabecera de la tabla */
+        .header-select {
+            background-color: transparent;
+            border: none;
+            color: #94a3b8;
+            font-weight: 900;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            padding-right: 1.5rem;
+            width: auto;
+            outline: none;
+        }
+        .header-select:focus { color: #3b82f6; }
+        .header-select option { background-color: #0f172a; color: white; }
     </style>
 </head>
 <body class="antialiased overflow-x-hidden">
@@ -104,7 +121,7 @@
     <div class="flex h-screen overflow-hidden">
         
         <!-- Sidebar Escritorio -->
-        <aside class="w-72 glass-panel m-4 flex flex-col hidden lg:flex shadow-2xl rounded-3xl shrink-0">
+        <aside class="w-72 glass-panel m-4 flex flex-col hidden lg:flex shadow-2xl rounded-3xl shrink-0 overflow-y-auto">
             <div class="p-6">
                 <div class="flex items-center gap-3 mb-10">
                     <div class="bg-blue-600 p-2 rounded-lg"><i class="fas fa-shield-alt text-white"></i></div>
@@ -176,8 +193,16 @@
                                 <th class="px-8 py-6 border-b border-white/5">Entidad / Ubicación</th>
                                 <th class="px-8 py-6 border-b border-white/5">Trámite / Proceso</th>
                                 <th class="px-8 py-6 border-b border-white/5">Responsable</th>
-                                <th class="px-8 py-6 border-b border-white/5 text-center">Alerta Abog</th>
-                                <th class="px-8 py-6 border-b border-white/5 text-center">Alerta Ley</th>
+                                <th class="px-8 py-6 border-b border-white/5 text-center">
+                                    <select id="headerFilterE" class="header-select" onchange="updateHeaderSelection('alertaE', this.value)">
+                                        <option value="ALL">Alerta Abog</option>
+                                    </select>
+                                </th>
+                                <th class="px-8 py-6 border-b border-white/5 text-center">
+                                    <select id="headerFilterF" class="header-select" onchange="updateHeaderSelection('alertaF', this.value)">
+                                        <option value="ALL">Alerta Ley</option>
+                                    </select>
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="divide-y divide-white/5"></tbody>
@@ -203,10 +228,11 @@
         const dataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}`;
         
         let fullData = [];
-        let selections = { git: 'ALL', coord: 'ALL', abog: 'ALL' };
+        let selections = { git: 'ALL', coord: 'ALL', abog: 'ALL', alertaE: 'ALL', alertaF: 'ALL' };
 
         function setupFilters() {
             const containers = ['desktop-filter-container', 'mobile-filter-container'];
+            // Solo los filtros base en el sidebar
             const filterConfigs = [
                 { label: 'Grupo (G)', type: 'GIT', default: 'TODOS LOS GRUPOS' },
                 { label: 'Coordinación (I)', type: 'COORD', default: 'TODAS LAS COORDS' },
@@ -230,9 +256,13 @@
                         const type = e.target.getAttribute('data-type');
                         const val = e.target.value;
                         document.querySelectorAll(`.filter-select[data-type="${type}"]`).forEach(s => s.value = val);
-                        selections[type.toLowerCase()] = val;
+                        
+                        const key = type.toLowerCase();
+                        selections[key] = val;
+
                         if (type === 'GIT') { selections.coord = 'ALL'; selections.abog = 'ALL'; }
                         if (type === 'COORD') { selections.abog = 'ALL'; }
+                        
                         updateAllDropdowns();
                         applyFilters();
                     });
@@ -240,6 +270,12 @@
                     container.appendChild(template);
                 });
             });
+        }
+
+        function updateHeaderSelection(key, val) {
+            selections[key] = val;
+            updateAllDropdowns();
+            applyFilters();
         }
 
         function toggleMobileMenu() {
@@ -277,13 +313,44 @@
         }
 
         function updateAllDropdowns() {
-            const gitItems = [...new Set(fullData.map(d => d.git).filter(v => v))].sort();
-            const coordItems = [...new Set(fullData.filter(d => (selections.git === 'ALL' || d.git.toUpperCase() === selections.git)).map(d => d.coordinador).filter(v => v))].sort();
-            const abogItems = [...new Set(fullData.filter(d => (selections.git === 'ALL' || d.git.toUpperCase() === selections.git) && (selections.coord === 'ALL' || d.coordinador.toUpperCase().includes(selections.coord))).map(d => d.abogado).filter(v => v))].sort();
+            // Datos filtrados actuales para cascada
+            const currentFiltered = fullData.filter(d => {
+                if (selections.git !== 'ALL' && d.git.toUpperCase() !== selections.git) return false;
+                if (selections.coord !== 'ALL' && !d.coordinador.toUpperCase().includes(selections.coord)) return false;
+                if (selections.abog !== 'ALL' && d.abogado.toUpperCase() !== selections.abog) return false;
+                return true;
+            });
 
+            // Grupos
+            const gitItems = [...new Set(fullData.map(d => d.git).filter(v => v))].sort();
             populateAllSelectors('GIT', gitItems, selections.git);
+
+            // Coordinación (cascada de grupo)
+            const coordItems = [...new Set(fullData.filter(d => (selections.git === 'ALL' || d.git.toUpperCase() === selections.git)).map(d => d.coordinador).filter(v => v))].sort();
             populateAllSelectors('COORD', coordItems, selections.coord);
+
+            // Abogado (cascada de grupo + coord)
+            const abogItems = [...new Set(fullData.filter(d => (selections.git === 'ALL' || d.git.toUpperCase() === selections.git) && (selections.coord === 'ALL' || d.coordinador.toUpperCase().includes(selections.coord))).map(d => d.abogado).filter(v => v))].sort();
             populateAllSelectors('ABOG', abogItems, selections.abog);
+            
+            // Opciones de alerta en los encabezados (siempre visibles)
+            const alertaEItems = [...new Set(currentFiltered.map(d => d.alertaE).filter(v => v))].sort();
+            const alertaFItems = [...new Set(currentFiltered.map(d => d.alertaF).filter(v => v))].sort();
+
+            updateHeaderSelector('headerFilterE', alertaEItems, selections.alertaE, 'Alerta Abog');
+            updateHeaderSelector('headerFilterF', alertaFItems, selections.alertaF, 'Alerta Ley');
+        }
+
+        function updateHeaderSelector(id, items, currentVal, defaultLabel) {
+            const select = document.getElementById(id);
+            select.innerHTML = `<option value="ALL">${defaultLabel}</option>`;
+            items.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.toUpperCase();
+                opt.textContent = item;
+                if (opt.value === currentVal) opt.selected = true;
+                select.appendChild(opt);
+            });
         }
 
         function populateAllSelectors(type, items, currentVal) {
@@ -301,7 +368,7 @@
         }
 
         function resetFilters() {
-            selections = { git: 'ALL', coord: 'ALL', abog: 'ALL' };
+            selections = { git: 'ALL', coord: 'ALL', abog: 'ALL', alertaE: 'ALL', alertaF: 'ALL' };
             document.getElementById('mainSearch').value = '';
             document.querySelectorAll('.filter-select').forEach(s => s.value = 'ALL');
             updateAllDropdowns();
@@ -314,6 +381,8 @@
                 if (selections.git !== 'ALL' && d.git.toUpperCase() !== selections.git) return false;
                 if (selections.coord !== 'ALL' && !d.coordinador.toUpperCase().includes(selections.coord)) return false;
                 if (selections.abog !== 'ALL' && d.abogado.toUpperCase() !== selections.abog) return false;
+                if (selections.alertaE !== 'ALL' && d.alertaE.toUpperCase() !== selections.alertaE) return false;
+                if (selections.alertaF !== 'ALL' && d.alertaF.toUpperCase() !== selections.alertaF) return false;
                 if (search && !d.entidad.toLowerCase().includes(search) && !d.abogado.toLowerCase().includes(search)) return false;
                 return true;
             });
@@ -330,7 +399,7 @@
             // KPI 3: Vencido Ley
             document.getElementById('kpi-3').innerText = data.filter(d => d.alertaF.toUpperCase().includes('VENCIDO')).length;
             
-            // KPI 4: Cantidad de trámites a revisar (TOTAL DE LA LISTA FILTRADA)
+            // KPI 4: Cantidad de trámites a revisar (TOTAL VISIBLE)
             document.getElementById('kpi-4').innerText = data.length;
             
             // KPI 5: Dentro del tiempo (Columna F / Alerta Ley)
