@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Executive Control Dashboard 2026 - Mobile Ready</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        
+
         :root {
             --bg-main: #0b0f1a;
             --card-bg: rgba(22, 30, 46, 0.9);
             --accent: #3b82f6;
         }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-main);
             color: #f1f5f9;
             -webkit-tap-highlight-color: transparent;
@@ -24,39 +26,55 @@
 
         .glass-panel {
             background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
         }
 
         .kpi-card {
-            border-radius: 20px;
-            padding: 1.25rem;
-            border: 2px solid;
+            border-radius: 24px;
+            padding: 1.5rem;
+            border: 1.5px solid;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
+            min-height: 120px;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.5);
         }
 
         .status-pill {
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 0.02em;
             display: inline-block;
-            min-width: 120px;
             text-align: center;
         }
 
-        .vencido { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
-        .revisor { background: rgba(244, 114, 182, 0.15); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.2); }
-        .tiempo { background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.2); }
-        .ley { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.2); }
+        .vencido { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .revisor { background: rgba(244, 114, 182, 0.1); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.3); }
+        .tiempo { background: rgba(234, 179, 8, 0.1); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
+        .ley { background: rgba(168, 85, 247, 0.1); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+
+        .k-icon {
+            font-size: 1.25rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
 
         #mobile-filters {
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             transform: translateX(-100%);
         }
+
         #mobile-filters.active {
             transform: translateX(0);
         }
@@ -88,8 +106,62 @@
         }
         .header-select:focus { color: #3b82f6; }
         .header-select option { background-color: #0f172a; color: white; }
+
+        /* Multi-selection styles */
+        .multi-select-wrapper { position: relative; }
+        .multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            margin-top: 0.5rem;
+            max-height: 350px;
+            display: none;
+            flex-direction: column;
+            border-radius: 1.25rem;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+        .multi-select-dropdown.active { display: flex; }
+        
+        .multi-checkbox {
+            width: 1.1rem;
+            height: 1.1rem;
+            accent-color: #3b82f6;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dropdown-item:hover { background: rgba(255, 255, 255, 0.05); }
+
+        .dropdown-actions {
+            display: flex;
+            gap: 1px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .action-btn {
+            flex: 1;
+            padding: 0.6rem;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            transition: all 0.2s;
+        }
+        .action-btn:hover { color: #fff; background: rgba(59, 130, 246, 0.2); }
     </style>
 </head>
+
 <body class="antialiased overflow-x-hidden">
 
     <!-- Loader -->
@@ -99,27 +171,33 @@
     </div>
 
     <!-- Menú de Filtros Móvil -->
-    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 z-[60] hidden backdrop-blur-sm"></div>
-    <aside id="mobile-filters" class="fixed top-0 left-0 h-full w-[85%] max-w-xs bg-[#0f172a] z-[70] p-6 shadow-2xl lg:hidden overflow-y-auto">
+    <div id="mobile-overlay" onclick="toggleMobileMenu()"
+        class="fixed inset-0 bg-black/60 z-[60] hidden backdrop-blur-sm"></div>
+    <aside id="mobile-filters"
+        class="fixed top-0 left-0 h-full w-[85%] max-w-xs bg-[#0f172a] z-[70] p-6 shadow-2xl lg:hidden overflow-y-auto">
         <div class="flex justify-between items-center mb-8">
             <h2 class="font-black text-blue-500 uppercase tracking-tighter text-xl">Filtros de Control</h2>
-            <button onclick="toggleMobileMenu()" class="text-slate-400 p-2"><i class="fas fa-times text-2xl"></i></button>
+            <button onclick="toggleMobileMenu()" class="text-slate-400 p-2"><i
+                    class="fas fa-times text-2xl"></i></button>
         </div>
-        
+
         <div class="space-y-6" id="mobile-filter-container"></div>
 
         <div class="mt-10 pt-6 border-t border-white/10 space-y-4">
-            <button onclick="fetchData(); toggleMobileMenu();" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl text-sm shadow-lg active:scale-95 transition-transform">
+            <button onclick="fetchData(); toggleMobileMenu();"
+                class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl text-sm shadow-lg active:scale-95 transition-transform">
                 ACTUALIZAR DATOS
             </button>
-            <button onclick="resetFilters(); toggleMobileMenu();" class="w-full text-slate-500 font-bold py-2 text-sm uppercase tracking-widest">
+            <button onclick="resetFilters(); toggleMobileMenu();"
+                class="w-full text-slate-500 font-bold py-2 text-sm uppercase tracking-widest">
                 LIMPIAR FILTROS
             </button>
         </div>
     </aside>
 
     <div class="flex h-screen overflow-hidden">
-        
+
+        <!-- Sidebar Escritorio -->
         <!-- Sidebar Escritorio -->
         <aside class="w-72 glass-panel m-4 flex flex-col hidden lg:flex shadow-2xl rounded-3xl shrink-0 overflow-y-auto">
             <div class="p-6">
@@ -131,51 +209,75 @@
             </div>
             <div class="mt-auto p-6 space-y-4">
                 <p id="syncTime" class="text-[10px] font-mono text-emerald-400 text-center uppercase tracking-widest">Sincronizado: --:--</p>
-                <button onclick="fetchData()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl transition-all shadow-lg text-sm">
+                <button onclick="fetchData()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl transition-all shadow-lg text-sm mb-4">
                     FORZAR ACTUALIZACIÓN
+                </button>
+                <button onclick="exportToExcel()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 rounded-xl transition-all shadow-lg text-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-file-excel"></i> EXPORTAR EXCEL
                 </button>
             </div>
         </aside>
 
         <!-- Contenido Principal -->
         <main class="flex-1 overflow-y-auto p-4 lg:p-8">
-            
+
             <header class="flex flex-col gap-4 mb-6">
                 <div class="flex justify-between items-center">
                     <div>
                         <h1 class="text-3xl lg:text-4xl font-black tracking-tight">Control de <span class="text-blue-500">Reparto</span></h1>
                         <p id="currentDate" class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1"></p>
                     </div>
-                    <button onclick="toggleMobileMenu()" class="lg:hidden bg-blue-600/20 text-blue-500 px-5 py-3 rounded-xl border border-blue-500/30 font-black text-sm flex items-center gap-2">
-                        <i class="fas fa-filter"></i> FILTROS
-                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="toggleMobileMenu()" class="lg:hidden bg-blue-600/20 text-blue-500 px-5 py-3 rounded-xl border border-blue-500/30 font-black text-sm flex items-center gap-2">
+                            <i class="fas fa-filter"></i> FILTROS
+                        </button>
+                        <button onclick="exportToExcel()" class="lg:hidden bg-emerald-600/20 text-emerald-500 px-5 py-3 rounded-xl border border-emerald-500/30 font-black text-sm flex items-center gap-2">
+                            <i class="fas fa-file-excel"></i> EXPORTAR
+                        </button>
+                    </div>
                 </div>
                 <div class="relative w-full">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
-                    <input type="text" id="mainSearch" placeholder="Buscar entidad o abogado..." class="bg-slate-900/50 border border-white/10 rounded-2xl pl-12 pr-5 py-5 text-lg outline-none focus:ring-2 focus:ring-blue-500 w-full shadow-inner text-white">
+                    <input type="text" id="mainSearch" placeholder="Buscar entidad o abogado..."
+                        class="bg-slate-900/50 border border-white/10 rounded-2xl pl-12 pr-5 py-5 text-lg outline-none focus:ring-2 focus:ring-blue-500 w-full shadow-inner text-white">
                 </div>
             </header>
 
             <!-- KPIs -->
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-                <div class="kpi-card border-pink-500/50 bg-pink-500/5">
-                    <p class="text-[10px] font-black text-pink-400 uppercase mb-1">Total en revisión pero vencido</p>
+                <div class="kpi-card border-pink-500/40 bg-pink-500/5">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] font-black text-pink-400 uppercase tracking-wider">Total en revisión pero vencido</p>
+                        <i class="fas fa-file-signature k-icon text-pink-500"></i>
+                    </div>
                     <span id="kpi-1" class="text-4xl font-black text-pink-500">0</span>
                 </div>
-                <div class="kpi-card border-red-500/50 bg-red-500/5">
-                    <p class="text-[10px] font-black text-red-400 uppercase mb-1">⚠️ Vencido: Proyección (Abogado)</p>
+                <div class="kpi-card border-red-500/40 bg-red-500/5">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] font-black text-red-400 uppercase tracking-wider">⚠️ Vencido: Proyección (Abog)</p>
+                        <i class="fas fa-user-clock k-icon text-red-500"></i>
+                    </div>
                     <span id="kpi-2" class="text-4xl font-black text-red-500">0</span>
                 </div>
-                <div class="kpi-card border-red-700/50 bg-red-900/10">
-                    <p class="text-[10px] font-black text-red-500 uppercase mb-1">⚠️ Trámites Vencidos</p>
+                <div class="kpi-card border-red-700/40 bg-red-900/10">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] font-black text-red-500 uppercase tracking-wider">⚠️ Trámites Vencidos</p>
+                        <i class="fas fa-calendar-times k-icon text-red-600"></i>
+                    </div>
                     <span id="kpi-3" class="text-4xl font-black text-red-600">0</span>
                 </div>
-                <div class="kpi-card border-orange-500/50 bg-orange-500/5">
-                    <p class="text-[10px] font-black text-orange-400 uppercase mb-1">Cantidad de trámites a revisar</p>
+                <div class="kpi-card border-orange-500/40 bg-orange-500/5">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] font-black text-orange-400 uppercase tracking-wider">Cantidad de Trámites</p>
+                        <i class="fas fa-list-check k-icon text-orange-500"></i>
+                    </div>
                     <span id="kpi-4" class="text-4xl font-black text-orange-500">0</span>
                 </div>
-                <div class="kpi-card border-yellow-500/50 bg-yellow-500/5">
-                    <p class="text-[10px] font-black text-yellow-400 uppercase mb-1">Dentro del tiempo pero sin proyectar</p>
+                <div class="kpi-card border-yellow-500/40 bg-yellow-500/5">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] font-black text-yellow-500 uppercase tracking-wider">Dentro del tiempo</p>
+                        <i class="fas fa-hourglass-start k-icon text-yellow-500"></i>
+                    </div>
                     <span id="kpi-5" class="text-4xl font-black text-yellow-500">0</span>
                 </div>
             </div>
@@ -183,40 +285,71 @@
             <!-- Tabla -->
             <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl">
                 <div class="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                    <span class="text-sm font-bold text-slate-300 uppercase tracking-widest"><i class="fas fa-list-ul mr-2 text-blue-500"></i>Listado de Trámites</span>
-                    <span id="rowCount" class="text-xs bg-blue-600/20 text-blue-400 px-4 py-2 rounded-md font-black italic">0 REGISTROS</span>
+                    <span class="text-sm font-bold text-slate-300 uppercase tracking-widest"><i
+                            class="fas fa-list-ul mr-2 text-blue-500"></i>Listado de Trámites</span>
+                    <span id="rowCount"
+                        class="text-xs bg-blue-600/20 text-blue-400 px-4 py-2 rounded-md font-black italic">0
+                        REGISTROS</span>
                 </div>
                 <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left border-separate border-spacing-0 min-w-[1000px]">
+                    <table class="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
-                            <tr class="text-[13px] font-black text-slate-400 uppercase tracking-widest bg-slate-900/80">
-                                <th class="px-8 py-6 border-b border-white/5">Entidad / Ubicación</th>
-                                <th class="px-8 py-6 border-b border-white/5">Trámite / Proceso</th>
-                                <th class="px-8 py-6 border-b border-white/5">Responsable</th>
-                                <th class="px-8 py-6 border-b border-white/5 text-center">
-                                    <select id="headerFilterE" class="header-select" onchange="updateHeaderSelection('alertaE', this.value)">
+                            <tr class="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] bg-black/40">
+                                <th class="px-8 py-5 border-b border-white/10">Entidad / Ubicación</th>
+                                <th class="px-8 py-5 border-b border-white/10">Trámite / Proceso</th>
+                                <th class="px-8 py-5 border-b border-white/10">Responsable / Coord</th>
+                                <th class="px-8 py-5 border-b border-white/10 text-center">
+                                    <select id="headerFilterE" class="header-select font-black"
+                                        onchange="updateHeaderSelection('alertaE', this.value)">
                                         <option value="ALL">Alerta Abog</option>
                                     </select>
                                 </th>
-                                <th class="px-8 py-6 border-b border-white/5 text-center">
-                                    <select id="headerFilterF" class="header-select" onchange="updateHeaderSelection('alertaF', this.value)">
+                                <th class="px-8 py-5 border-b border-white/10 text-center">
+                                    <select id="headerFilterF" class="header-select font-black"
+                                        onchange="updateHeaderSelection('alertaF', this.value)">
                                         <option value="ALL">Alerta Ley</option>
                                     </select>
                                 </th>
+                                <th class="px-8 py-5 border-b border-white/10 text-center">Acción</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody" class="divide-y divide-white/5"></tbody>
+                        <tbody id="tableBody" class="divide-y divide-white/[0.05]"></tbody>
                     </table>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Modal de Detalles -->
+    <div id="detailsModal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-md" onclick="closeModal()"></div>
+        <div
+            class="glass-panel w-full max-w-2xl rounded-3xl overflow-hidden relative z-10 animate-in fade-in zoom-in duration-300">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h3 class="font-black text-xl uppercase tracking-tighter">Detalles Adicionales</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6" id="modalContent">
+                <!-- Se llena dinámicamente -->
+            </div>
+            <div class="p-6 border-t border-white/10 bg-white/5 flex justify-end">
+                <button onclick="closeModal()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg text-sm">
+                    CERRAR
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Template para los selectores de filtros -->
     <template id="filter-group-template">
         <div class="filter-item mb-6">
-            <label class="filter-label text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2 block"></label>
-            <select class="filter-select w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white outline-none focus:ring-1 focus:ring-blue-500 shadow-lg">
+            <label
+                class="filter-label text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2 block"></label>
+            <select
+                class="filter-select w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white outline-none focus:ring-1 focus:ring-blue-500 shadow-lg">
                 <option value="ALL"></option>
             </select>
         </div>
@@ -226,50 +359,139 @@
         const sheetId = '1NTz2GHYql5JnbqlImPbR4gd0bNl4LZlXBiTEzNvl6Uo';
         const gid = '993887843';
         const dataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}`;
-        
+
         let fullData = [];
-        let selections = { git: 'ALL', coord: 'ALL', abog: 'ALL', alertaE: 'ALL', alertaF: 'ALL' };
+        let selections = { git: 'ALL', coord: 'ALL', abog: [], alertaE: 'ALL', alertaF: 'ALL' };
 
         function setupFilters() {
             const containers = ['desktop-filter-container', 'mobile-filter-container'];
-            // Solo los filtros base en el sidebar
             const filterConfigs = [
                 { label: 'Grupo (G)', type: 'GIT', default: 'TODOS LOS GRUPOS' },
-                { label: 'Coordinación (I)', type: 'COORD', default: 'TODAS LAS COORDS' },
-                { label: 'Abogado (D)', type: 'ABOG', default: 'TODOS LOS ABOGADOS' }
+                { label: 'Coordinación (M)', type: 'COORD', default: 'TODAS LAS COORDS' },
+                { label: 'Abogado (D)', type: 'ABOG', default: 'SELECCIONAR ABOGADOS' }
             ];
 
             containers.forEach(containerId => {
                 const container = document.getElementById(containerId);
-                container.innerHTML = ''; 
+                container.innerHTML = '';
 
                 filterConfigs.forEach(config => {
                     const template = document.getElementById('filter-group-template').content.cloneNode(true);
                     const label = template.querySelector('.filter-label');
                     const select = template.querySelector('.filter-select');
-
                     label.textContent = config.label;
-                    select.setAttribute('data-type', config.type);
-                    select.options[0].textContent = config.default;
 
-                    select.addEventListener('change', (e) => {
-                        const type = e.target.getAttribute('data-type');
-                        const val = e.target.value;
-                        document.querySelectorAll(`.filter-select[data-type="${type}"]`).forEach(s => s.value = val);
+                    if (config.type === 'ABOG') {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'multi-select-wrapper';
+                        wrapper.innerHTML = `
+                            <button class="multi-select-btn w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white flex justify-between items-center shadow-lg transition-all hover:border-blue-500/50">
+                                <span class="btn-text truncate">${config.default}</span>
+                                <i class="fas fa-chevron-down text-xs text-slate-500 transition-transform"></i>
+                            </button>
+                            <div class="multi-select-dropdown glass-panel">
+                                <div class="dropdown-actions">
+                                    <button class="action-btn" onclick="event.stopPropagation(); selectAllVisible()">Todos</button>
+                                    <button class="action-btn border-l border-white/5" onclick="event.stopPropagation(); clearAbog()">Limpiar</button>
+                                </div>
+                                <div class="p-2 border-b border-white/5">
+                                    <input type="text" placeholder="Buscar abogado..." class="dropdown-search w-full bg-black/20 border border-white/5 rounded-lg p-2 text-xs text-white outline-none focus:ring-1 focus:ring-blue-500/30">
+                                </div>
+                                <div class="dropdown-list custom-scrollbar max-h-48 overflow-y-auto"></div>
+                            </div>
+                        `;
                         
-                        const key = type.toLowerCase();
-                        selections[key] = val;
-
-                        if (type === 'GIT') { selections.coord = 'ALL'; selections.abog = 'ALL'; }
-                        if (type === 'COORD') { selections.abog = 'ALL'; }
+                        const btn = wrapper.querySelector('.multi-select-btn');
+                        const dropdown = wrapper.querySelector('.multi-select-dropdown');
+                        const search = wrapper.querySelector('.dropdown-search');
                         
-                        updateAllDropdowns();
-                        applyFilters();
-                    });
-
+                        btn.onclick = (e) => {
+                            e.stopPropagation();
+                            document.querySelectorAll('.multi-select-dropdown').forEach(d => { if(d !== dropdown) d.classList.remove('active') });
+                            dropdown.classList.toggle('active');
+                            wrapper.querySelector('.fa-chevron-down').classList.toggle('rotate-180');
+                        };
+                        
+                        search.oninput = (e) => {
+                            const val = e.target.value.toLowerCase();
+                            dropdown.querySelectorAll('.dropdown-item').forEach(item => {
+                                const text = item.textContent.toLowerCase();
+                                item.style.display = text.includes(val) ? 'flex' : 'none';
+                            });
+                        };
+                        select.replaceWith(wrapper);
+                    } else {
+                        select.setAttribute('data-type', config.type);
+                        select.options[0].textContent = config.default;
+                        select.addEventListener('change', (e) => {
+                            const type = e.target.getAttribute('data-type');
+                            const val = e.target.value;
+                            document.querySelectorAll(`.filter-select[data-type="${type}"]`).forEach(s => s.value = val);
+                            const key = type.toLowerCase();
+                            selections[key] = val;
+                            if (type === 'GIT') { selections.coord = 'ALL'; selections.abog = []; }
+                            if (type === 'COORD') { selections.abog = []; }
+                            updateAllDropdowns();
+                            applyFilters();
+                        });
+                    }
                     container.appendChild(template);
                 });
             });
+
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('active'));
+                document.querySelectorAll('.fa-chevron-down').forEach(i => i.classList.remove('rotate-180'));
+            });
+        }
+
+        function renderMultiSelect(items) {
+            const wrappers = document.querySelectorAll('.multi-select-wrapper');
+            wrappers.forEach(wrapper => {
+                const list = wrapper.querySelector('.dropdown-list');
+                const btnText = wrapper.querySelector('.btn-text');
+                
+                list.innerHTML = items.map(item => `
+                    <div class="dropdown-item" onclick="event.stopPropagation(); toggleAbog('${item.toUpperCase()}')">
+                        <input type="checkbox" class="multi-checkbox" ${selections.abog.includes(item.toUpperCase()) ? 'checked' : ''} onclick="event.stopPropagation()">
+                        <span class="text-[11px] font-bold text-slate-300 uppercase truncate">${item}</span>
+                    </div>
+                `).join('');
+
+                if (selections.abog.length === 0) {
+                    btnText.textContent = 'TODOS LOS ABOGADOS';
+                    btnText.classList.remove('text-blue-400');
+                } else if (selections.abog.length === items.length) {
+                    btnText.textContent = 'TODOS SELECCIONADOS';
+                    btnText.classList.add('text-blue-400');
+                } else {
+                    btnText.textContent = `${selections.abog.length} SELECCIONADO${selections.abog.length > 1 ? 'S' : ''}`;
+                    btnText.classList.add('text-blue-400');
+                }
+            });
+        }
+
+        function toggleAbog(val) {
+            const index = selections.abog.indexOf(val);
+            if (index > -1) selections.abog.splice(index, 1);
+            else selections.abog.push(val);
+            updateFilterEffects();
+        }
+
+        function selectAllVisible() {
+            const items = [...new Set(fullData.filter(d => (selections.git === 'ALL' || d.git.toUpperCase() === selections.git) && (selections.coord === 'ALL' || d.coordinador.toUpperCase().includes(selections.coord))).map(d => d.abogado.toUpperCase()).filter(v => v))];
+            selections.abog = items;
+            updateFilterEffects();
+        }
+
+        function clearAbog() {
+            selections.abog = [];
+            updateFilterEffects();
+        }
+
+        function updateFilterEffects() {
+            updateAllDropdowns();
+            applyFilters();
         }
 
         function updateHeaderSelection(key, val) {
@@ -298,17 +520,19 @@
                     const getV = (idx) => (r.c[idx] ? (r.c[idx].f || r.c[idx].v || '').toString().trim() : '');
                     return {
                         entidad: getV(0), municipio: getV(1), tramite: getV(2), abogado: getV(3),
-                        alertaE: getV(4), alertaF: getV(5), git: getV(6), sector: getV(7), coordinador: getV(10)
+                        alertaE: getV(4), alertaF: getV(5), git: getV(6), sector: getV(7),
+                        col8: getV(8), col9: getV(9), col10: getV(10), col11: getV(11),
+                        coordinador: getV(12)
                     };
                 }).filter(d => d.entidad !== '' && d.entidad !== 'NOMBRE DE LA ENTIDAD');
 
                 updateAllDropdowns();
                 applyFilters();
-                document.getElementById('syncTime').innerText = `Sync: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            } catch (error) { 
-                console.error("Error:", error); 
-            } finally { 
-                document.getElementById('loader').classList.add('hidden'); 
+                document.getElementById('syncTime').innerText = `Sync: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            } catch (error) {
+                console.error("Error:", error);
+            } finally {
+                document.getElementById('loader').classList.add('hidden');
             }
         }
 
@@ -331,8 +555,8 @@
 
             // Abogado (cascada de grupo + coord)
             const abogItems = [...new Set(fullData.filter(d => (selections.git === 'ALL' || d.git.toUpperCase() === selections.git) && (selections.coord === 'ALL' || d.coordinador.toUpperCase().includes(selections.coord))).map(d => d.abogado).filter(v => v))].sort();
-            populateAllSelectors('ABOG', abogItems, selections.abog);
-            
+            renderMultiSelect(abogItems);
+
             // Opciones de alerta en los encabezados (siempre visibles)
             const alertaEItems = [...new Set(currentFiltered.map(d => d.alertaE).filter(v => v))].sort();
             const alertaFItems = [...new Set(currentFiltered.map(d => d.alertaF).filter(v => v))].sort();
@@ -368,7 +592,7 @@
         }
 
         function resetFilters() {
-            selections = { git: 'ALL', coord: 'ALL', abog: 'ALL', alertaE: 'ALL', alertaF: 'ALL' };
+            selections = { git: 'ALL', coord: 'ALL', abog: [], alertaE: 'ALL', alertaF: 'ALL' };
             document.getElementById('mainSearch').value = '';
             document.querySelectorAll('.filter-select').forEach(s => s.value = 'ALL');
             updateAllDropdowns();
@@ -380,7 +604,7 @@
             let filtered = fullData.filter(d => {
                 if (selections.git !== 'ALL' && d.git.toUpperCase() !== selections.git) return false;
                 if (selections.coord !== 'ALL' && !d.coordinador.toUpperCase().includes(selections.coord)) return false;
-                if (selections.abog !== 'ALL' && d.abogado.toUpperCase() !== selections.abog) return false;
+                if (selections.abog.length > 0 && !selections.abog.includes(d.abogado.toUpperCase())) return false;
                 if (selections.alertaE !== 'ALL' && d.alertaE.toUpperCase() !== selections.alertaE) return false;
                 if (selections.alertaF !== 'ALL' && d.alertaF.toUpperCase() !== selections.alertaF) return false;
                 if (search && !d.entidad.toLowerCase().includes(search) && !d.abogado.toLowerCase().includes(search)) return false;
@@ -392,19 +616,19 @@
         function renderUI(data) {
             // KPI 1: En revisión Y Vencido Ley
             document.getElementById('kpi-1').innerText = data.filter(d => d.alertaE.toUpperCase().includes('REVISOR') && d.alertaF.toUpperCase().includes('VENCIDO')).length;
-            
+
             // KPI 2: Vencido Abogado
             document.getElementById('kpi-2').innerText = data.filter(d => d.alertaE.toUpperCase().includes('VENCIDO')).length;
-            
+
             // KPI 3: Vencido Ley
             document.getElementById('kpi-3').innerText = data.filter(d => d.alertaF.toUpperCase().includes('VENCIDO')).length;
-            
+
             // KPI 4: Cantidad de trámites a revisar (TOTAL VISIBLE)
             document.getElementById('kpi-4').innerText = data.length;
-            
+
             // KPI 5: Dentro del tiempo (Columna F / Alerta Ley)
             document.getElementById('kpi-5').innerText = data.filter(d => d.alertaF.toUpperCase().includes('TIEMPO')).length;
-            
+
             document.getElementById('rowCount').innerText = `${data.length} REGISTROS`;
 
             const getStatusClass = (t) => {
@@ -418,29 +642,102 @@
 
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = data.map(d => `
-                <tr class="hover:bg-white/[0.04] transition-colors">
-                    <td class="px-8 py-8">
-                        <div class="font-extrabold text-white uppercase text-sm leading-tight mb-1">${d.entidad}</div>
+                <tr class="hover:bg-white/[0.04] transition-colors border-b border-white/[0.03]">
+                    <td class="px-8 py-6">
+                        <div class="font-extrabold text-white uppercase text-[13px] leading-tight mb-1 group-hover:text-blue-400 transition-colors">${d.entidad}</div>
                         <div class="flex flex-col gap-0.5">
-                            <div class="text-[11px] text-blue-400 font-black tracking-widest uppercase italic">${d.git || 'N/A'}</div>
-                            <div class="text-[11px] text-slate-400 font-bold uppercase tracking-tight italic">📍 ${d.municipio}</div>
+                            <div class="text-[10px] text-blue-400/80 font-black tracking-widest uppercase italic">${d.git || 'N/A'}</div>
+                            <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tight italic">📍 ${d.municipio}</div>
                         </div>
                     </td>
-                    <td class="px-8 py-8">
-                        <div class="text-slate-300 text-sm font-medium max-w-md leading-relaxed">${d.tramite}</div>
+                    <td class="px-8 py-6">
+                        <div class="text-slate-300 text-[13px] font-medium max-w-md leading-relaxed line-clamp-2" title="${d.tramite}">${d.tramite}</div>
                     </td>
-                    <td class="px-8 py-8">
-                        <div class="text-blue-300 font-black uppercase text-[13px] mb-1 tracking-wide">${d.abogado || 'SIN ASIGNAR'}</div>
-                        <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Coord: ${d.coordinador}</div>
+                    <td class="px-8 py-6">
+                        <div class="text-blue-200 font-extrabold uppercase text-[12px] mb-0.5 tracking-wide">${d.abogado || 'SIN ASIGNAR'}</div>
+                        <div class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">Coord: ${d.coordinador}</div>
                     </td>
-                    <td class="px-8 py-8 text-center"><span class="status-pill ${getStatusClass(d.alertaE)}">${d.alertaE}</span></td>
-                    <td class="px-8 py-8 text-center"><span class="status-pill ${getStatusClass(d.alertaF)}">${d.alertaF}</span></td>
+                    <td class="px-8 py-6 text-center"><span class="status-pill ${getStatusClass(d.alertaE)} shadow-sm">${d.alertaE}</span></td>
+                    <td class="px-8 py-6 text-center"><span class="status-pill ${getStatusClass(d.alertaF)} shadow-sm">${d.alertaF}</span></td>
+                    <td class="px-8 py-6 text-center">
+                        <button onclick='openModal(${JSON.stringify(d).replace(/'/g, "&apos;")})' class="bg-slate-800 hover:bg-blue-600/30 text-slate-400 hover:text-blue-400 p-3 rounded-2xl transition-all border border-white/5 active:scale-95 flex items-center justify-center mx-auto shadow-lg">
+                            <i class="fas fa-eye text-sm"></i>
+                        </button>
+                    </td>
                 </tr>
             `).join('');
         }
 
+        function openModal(d) {
+            const content = document.getElementById('modalContent');
+            const fields = [
+                { label: 'FECHA DEL RADICADO', value: d.col8 },
+                { label: 'FECHA DE ASIGNACIÓN ', value: d.col9 },
+                { label: 'OBSERVACIONES DEL REVISOR', value: d.col10 },
+                { label: 'OBSERVACIONES 2', value: d.col11 }
+            ];
+
+            content.innerHTML = fields.map(f => `
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">${f.label}</p>
+                    <p class="text-sm text-slate-200 font-medium">${f.value || 'N/A'}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('detailsModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('detailsModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function exportToExcel() {
+            // Obtener datos actuales (filtrados)
+            const search = document.getElementById('mainSearch').value.toLowerCase();
+            const dataToExport = fullData.filter(d => {
+                if (selections.git !== 'ALL' && d.git.toUpperCase() !== selections.git) return false;
+                if (selections.coord !== 'ALL' && !d.coordinador.toUpperCase().includes(selections.coord)) return false;
+                if (selections.abog.length > 0 && !selections.abog.includes(d.abogado.toUpperCase())) return false;
+                if (selections.alertaE !== 'ALL' && d.alertaE.toUpperCase() !== selections.alertaE) return false;
+                if (selections.alertaF !== 'ALL' && d.alertaF.toUpperCase() !== selections.alertaF) return false;
+                if (search && !d.entidad.toLowerCase().includes(search) && !d.abogado.toLowerCase().includes(search)) return false;
+                return true;
+            });
+
+            if (dataToExport.length === 0) {
+                alert("No hay datos para exportar");
+                return;
+            }
+
+            // Mapear datos a nombres de columnas amigables
+            const worksheetData = dataToExport.map(d => ({
+                "ENTIDAD": d.entidad,
+                "MUNICIPIO": d.municipio,
+                "TRÁMITE": d.tramite,
+                "ABOGADO": d.abogado,
+                "GRUPO": d.git,
+                "ALERTA ABOGADO": d.alertaE,
+                "ALERTA LEY": d.alertaF,
+                "FECHA RADICADO": d.col8,
+                "FECHA ASIGNACIÓN": d.col9,
+                "OBSERVACIONES REVISOR": d.col10,
+                "OBSERVACIONES 2": d.col11,
+                "COORDINADOR": d.coordinador
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte");
+
+            // Generar nombre de archivo con fecha
+            const fileName = `Reporte_Control_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            XLSX.writeFile(workbook, fileName);
+        }
+
         document.getElementById('mainSearch').addEventListener('input', applyFilters);
-        
+
         window.onload = () => {
             setupFilters();
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -448,4 +745,5 @@
         };
     </script>
 </body>
+
 </html>
