@@ -206,6 +206,43 @@
             color: #fff;
             background: rgba(59, 130, 246, 0.2);
         }
+
+        /* Contenedores para aislamiento de scroll */
+        .main-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 1rem;
+        }
+
+        @media (min-width: 1024px) {
+            .main-container {
+                padding: 2rem;
+            }
+        }
+
+        .scrollable-table-container {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        /* Cabecera de tabla pegajosa */
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: #0f172a;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 
@@ -270,9 +307,9 @@
         </aside>
 
         <!-- Contenido Principal -->
-        <main class="flex-1 overflow-y-auto p-4 lg:p-8">
-
-            <header class="flex flex-col gap-4 mb-6">
+        <main class="flex-1 main-container">
+            <div class="fixed-top-section shrink-0">
+                <header class="flex flex-col gap-4 mb-6">
                 <div class="flex justify-between items-center">
                     <div>
                         <h1 class="text-3xl lg:text-4xl font-black tracking-tight">Control de <span
@@ -324,31 +361,31 @@
                 </div>
                 <div class="kpi-card border-orange-500/40 bg-orange-500/5">
                     <div class="flex justify-between items-start">
-                        <p class="text-[10px] font-black text-orange-400 uppercase tracking-wider">Cantidad de Trámites
-                        </p>
+                        <p class="text-[10px] font-black text-orange-400 uppercase tracking-wider text-wrap leading-tight">Cantidad de Trámites</p>
                         <i class="fas fa-list-check k-icon text-orange-500"></i>
                     </div>
                     <span id="kpi-4" class="text-4xl font-black text-orange-500">0</span>
                 </div>
                 <div class="kpi-card border-yellow-500/40 bg-yellow-500/5">
                     <div class="flex justify-between items-start">
-                        <p class="text-[10px] font-black text-yellow-500 uppercase tracking-wider">Dentro del tiempo</p>
+                        <p class="text-[10px] font-black text-yellow-500 uppercase tracking-wider text-wrap leading-tight">Dentro del tiempo</p>
                         <i class="fas fa-hourglass-start k-icon text-yellow-500"></i>
                     </div>
                     <span id="kpi-5" class="text-4xl font-black text-yellow-500">0</span>
                 </div>
             </div>
+            </div> <!-- Cierre de fixed-top-section -->
 
             <!-- Tabla -->
-            <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl">
-                <div class="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
+            <div class="scrollable-table-container glass-panel rounded-3xl overflow-hidden shadow-2xl">
+                <div class="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center shrink-0">
                     <span class="text-sm font-bold text-slate-300 uppercase tracking-widest"><i
                             class="fas fa-list-ul mr-2 text-blue-500"></i>Listado de Trámites</span>
                     <span id="rowCount"
                         class="text-xs bg-blue-600/20 text-blue-400 px-4 py-2 rounded-md font-black italic">0
                         REGISTROS</span>
                 </div>
-                <div class="overflow-x-auto custom-scrollbar">
+                <div class="table-scroll-area custom-scrollbar">
                     <table class="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
                             <tr class="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] bg-black/40">
