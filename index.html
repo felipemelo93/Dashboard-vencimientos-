@@ -203,8 +203,99 @@
         }
 
         .action-btn:hover {
-            color: #fff;
-            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Custom Checkbox */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            padding: 0.85rem 1.25rem;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .checkbox-container:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .custom-cb {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .checkbox-container.checked .custom-cb {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+
+        .checkbox-container.checked[data-val*="VENCIDO"] .custom-cb {
+            background: #ef4444; border-color: #ef4444; 
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
+        
+        .checkbox-container.checked[data-val*="REVISOR"] .custom-cb {
+            background: #ec4899; border-color: #ec4899; 
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
+        }
+
+        .custom-cb::after {
+            content: '✓';
+            color: white;
+            font-size: 10px;
+            font-weight: 900;
+            display: none;
+        }
+
+        .checkbox-container.checked .custom-cb::after {
+            display: block;
+        }
+
+        .cb-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        .checkbox-container.checked .cb-label {
+            color: white;
+        }
+
+        .dropdown-search-wrapper {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .dropdown-search {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 0.6rem 1rem;
+            font-size: 12px;
+            color: white;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .dropdown-search:focus {
+            border-color: #3b82f6;
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
         }
 
         /* Contenedores para aislamiento de scroll */
@@ -335,7 +426,7 @@
             </header>
 
             <!-- KPIs -->
-            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                 <div class="kpi-card border-pink-500/40 bg-pink-500/5">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] font-black text-pink-400 uppercase tracking-wider">Total en revisión pero
@@ -372,6 +463,15 @@
                         <i class="fas fa-hourglass-start k-icon text-yellow-500"></i>
                     </div>
                     <span id="kpi-5" class="text-4xl font-black text-yellow-500">0</span>
+                </div>
+                <div id="kpi-card-6" onclick="toggleNotesFilter(!selections.onlyNotes)" 
+                    class="kpi-card border-amber-500/40 bg-amber-500/5 cursor-pointer transition-all hover:scale-105 active:scale-95 group relative overflow-hidden">
+                    <div class="flex justify-between items-start relative z-10">
+                        <p class="text-[10px] font-black text-amber-500 uppercase tracking-wider text-wrap leading-tight">En Seguimiento</p>
+                        <i class="fas fa-sticky-note k-icon text-amber-500 group-hover:rotate-12 transition-transform"></i>
+                    </div>
+                    <span id="kpi-6" class="text-4xl font-black text-amber-500 relative z-10">0</span>
+                    <div id="kpi-glow-6" class="absolute inset-0 bg-amber-500/10 opacity-0 transition-opacity"></div>
                 </div>
             </div>
             </div> <!-- Cierre de fixed-top-section -->
@@ -451,7 +551,7 @@
         const dataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}`;
 
         let fullData = [];
-        let selections = { git: 'ALL', coord: 'ALL', abog: [], alertaE: [], alertaF: [] };
+        let selections = { git: 'ALL', coord: 'ALL', abog: [], alertaE: [], alertaF: [], onlyNotes: false };
 
         function setupFilters() {
             const containers = ['desktop-filter-container', 'mobile-filter-container'];
@@ -494,6 +594,25 @@
                     }
                     container.appendChild(template);
                 });
+
+                // Añadir Switch de Seguimiento al final del sidebar
+                const followUpSection = document.createElement('div');
+                followUpSection.className = 'mt-6 pt-6 border-t border-white/5';
+                followUpSection.innerHTML = `
+                    <label class="flex items-center justify-between cursor-pointer group">
+                        <span class="text-[11px] font-black text-slate-500 uppercase tracking-widest group-hover:text-amber-500 transition-colors">🔥 Ver solo seguimiento</span>
+                        <div class="relative">
+                            <input type="checkbox" id="noteToggle" class="sr-only" onchange="toggleNotesFilter(this.checked)">
+                            <div class="block bg-slate-800 w-10 h-6 rounded-full border border-white/10"></div>
+                            <div class="dot absolute left-1 top-1 bg-slate-500 w-4 h-4 rounded-full transition-all"></div>
+                        </div>
+                    </label>
+                    <style>
+                        #noteToggle:checked ~ .dot { transform: translateX(100%); background-color: #f59e0b; }
+                        #noteToggle:checked ~ .block { border-color: #f59e0b/50; background-color: #f59e0b/20; }
+                    </style>
+                `;
+                container.appendChild(followUpSection);
             });
 
             document.addEventListener('click', () => {
@@ -525,10 +644,10 @@
                             <button class="action-btn" onclick="event.stopPropagation(); selectAllVisible('${filterKey}')">Todos</button>
                             <button class="action-btn border-l border-white/5" onclick="event.stopPropagation(); clearFilter('${filterKey}')">Limpiar</button>
                         </div>
-                        <div class="p-2 border-b border-white/5">
-                            <input type="text" placeholder="Buscar..." class="dropdown-search w-full bg-black/20 border border-white/5 rounded-lg p-2 text-xs text-white outline-none focus:ring-1 focus:ring-blue-500/30">
+                        <div class="dropdown-search-wrapper">
+                            <input type="text" placeholder="Buscar..." class="dropdown-search">
                         </div>
-                        <div class="dropdown-list custom-scrollbar max-h-48 overflow-y-auto"></div>
+                        <div class="dropdown-list custom-scrollbar max-h-56 overflow-y-auto"></div>
                     </div>
                 `;
 
@@ -538,6 +657,16 @@
 
                 btn.onclick = (e) => {
                     e.stopPropagation();
+                    const rect = wrapper.getBoundingClientRect();
+                    const spaceRight = window.innerWidth - rect.left;
+                    if (spaceRight < 300) {
+                        dropdown.style.left = 'auto';
+                        dropdown.style.right = '0';
+                    } else {
+                        dropdown.style.left = '0';
+                        dropdown.style.right = 'auto';
+                    }
+                    
                     document.querySelectorAll('.multi-select-dropdown').forEach(d => { if (d !== dropdown) d.classList.remove('active') });
                     dropdown.classList.toggle('active');
                     btn.querySelector('.fa-chevron-down').classList.toggle('rotate-180');
@@ -547,8 +676,8 @@
 
                 search.oninput = (e) => {
                     const val = e.target.value.toLowerCase();
-                    dropdown.querySelectorAll('.dropdown-item').forEach(item => {
-                        const text = item.textContent.toLowerCase();
+                    dropdown.querySelectorAll('.checkbox-container').forEach(item => {
+                        const text = item.querySelector('.cb-label').textContent.toLowerCase();
                         item.style.display = text.includes(val) ? 'flex' : 'none';
                     });
                 };
@@ -558,12 +687,16 @@
             const btnText = wrapper.querySelector('.btn-text');
             const selectedArray = selections[filterKey];
 
-            list.innerHTML = items.map(item => `
-                <div class="dropdown-item" onclick="event.stopPropagation(); toggleFilter('${filterKey}', '${item.toUpperCase()}')">
-                    <input type="checkbox" class="multi-checkbox" ${selectedArray.includes(item.toUpperCase()) ? 'checked' : ''} onclick="event.stopPropagation()">
-                    <span class="text-[10px] font-black text-slate-300 uppercase truncate">${item}</span>
+            list.innerHTML = items.map(item => {
+                const isChecked = selectedArray.includes(item.toUpperCase());
+                return `
+                <div class="checkbox-container ${isChecked ? 'checked' : ''}" 
+                     data-val="${item.toUpperCase()}"
+                     onclick="event.stopPropagation(); toggleFilter('${filterKey}', '${item.toUpperCase()}')">
+                    <div class="custom-cb"></div>
+                    <span class="cb-label">${item}</span>
                 </div>
-            `).join('');
+            `}).join('');
 
             if (selectedArray.length === 0) {
                 btnText.textContent = placeholder;
@@ -611,6 +744,20 @@
             applyFilters();
         }
 
+        function cleanupNotes() {
+            if (!fullData || fullData.length === 0) return;
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('note_')) {
+                    const existsAndVencido = fullData.some(d => {
+                        const noteKey = `note_${d.entidad}_${d.tramite}_${d.abogado}`.replace(/\s+/g, '_');
+                        const isOverdue = d.alertaE.toUpperCase().includes('VENCIDO') || d.alertaF.toUpperCase().includes('VENCIDO');
+                        return noteKey === key && isOverdue;
+                    });
+                    if (!existsAndVencido) localStorage.removeItem(key);
+                }
+            });
+        }
+
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-filters');
             const overlay = document.getElementById('mobile-overlay');
@@ -644,6 +791,7 @@
 
                 updateAllDropdowns();
                 applyFilters();
+                cleanupNotes();
                 syncStatus.innerHTML = `<span class="flex items-center gap-2"><span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Sync: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>`;
             } catch (error) {
                 console.error("Error:", error);
@@ -702,10 +850,15 @@
         }
 
         function resetFilters() {
-            selections = { git: 'ALL', coord: 'ALL', abog: [], alertaE: [], alertaF: [] };
+            selections = { git: 'ALL', coord: 'ALL', abog: [], alertaE: [], alertaF: [], onlyNotes: false };
             document.getElementById('mainSearch').value = '';
             document.querySelectorAll('.filter-select').forEach(s => s.value = 'ALL');
             updateAllDropdowns();
+            applyFilters();
+        }
+
+        function toggleNotesFilter(active) {
+            selections.onlyNotes = active;
             applyFilters();
         }
 
@@ -718,6 +871,12 @@
                 if (selections.alertaE.length > 0 && !selections.alertaE.includes(d.alertaE.toUpperCase())) return false;
                 if (selections.alertaF.length > 0 && !selections.alertaF.includes(d.alertaF.toUpperCase())) return false;
                 if (search && !d.entidad.toLowerCase().includes(search) && !d.abogado.toLowerCase().includes(search)) return false;
+
+                if (selections.onlyNotes) {
+                    const noteKey = `note_${d.entidad}_${d.tramite}_${d.abogado}`.replace(/\s+/g, '_');
+                    if (!localStorage.getItem(noteKey)) return false;
+                }
+
                 return true;
             });
             renderUI(filtered);
@@ -739,7 +898,29 @@
             // KPI 5: Dentro del tiempo (Columna F / Alerta Ley)
             document.getElementById('kpi-5').innerText = data.filter(d => d.alertaF.toUpperCase().includes('TIEMPO')).length;
 
+            // KPI 6: En Seguimiento (Notas activas en localStorage)
+            const followCount = data.filter(d => {
+                const noteKey = `note_${d.entidad}_${d.tramite}_${d.abogado}`.replace(/\s+/g, '_');
+                return localStorage.getItem(noteKey);
+            }).length;
+            document.getElementById('kpi-6').innerText = followCount;
+
+            // Visualización de filtro activo en KPI
+            const kpiCard = document.getElementById('kpi-card-6');
+            const kpiGlow = document.getElementById('kpi-glow-6');
+            if (selections.onlyNotes) {
+                kpiCard.classList.add('border-amber-500', 'ring-2', 'ring-amber-500/20');
+                kpiGlow.classList.replace('opacity-0', 'opacity-100');
+            } else {
+                kpiCard.classList.remove('border-amber-500', 'ring-2', 'ring-amber-500/20');
+                kpiGlow.classList.replace('opacity-100', 'opacity-0');
+            }
+
             document.getElementById('rowCount').innerText = `${data.length} REGISTROS`;
+            
+            // Sincronizar checkbox del sidebar
+            const noteToggles = document.querySelectorAll('#noteToggle');
+            noteToggles.forEach(t => t.checked = selections.onlyNotes);
 
             const getStatusClass = (t) => {
                 t = t.toUpperCase();
@@ -751,13 +932,22 @@
             };
 
             const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = data.map(d => `
+            tbody.innerHTML = data.map(d => {
+                const noteKey = `note_${d.entidad}_${d.tramite}_${d.abogado}`.replace(/\s+/g, '_');
+                const hasNote = localStorage.getItem(noteKey);
+                
+                return `
                 <tr class="hover:bg-white/[0.04] transition-colors border-b border-white/[0.03]">
                     <td class="px-8 py-6">
-                        <div class="font-extrabold text-white uppercase text-[13px] leading-tight mb-1 group-hover:text-blue-400 transition-colors">${d.entidad}</div>
-                        <div class="flex flex-col gap-0.5">
-                            <div class="text-[10px] text-blue-400/80 font-black tracking-widest uppercase italic">${d.git || 'N/A'}</div>
-                            <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tight italic">📍 ${d.municipio}</div>
+                        <div class="flex items-start gap-2">
+                            <div class="flex-1">
+                                <div class="font-extrabold text-white uppercase text-[13px] leading-tight mb-1 group-hover:text-blue-400 transition-colors">${d.entidad}</div>
+                                <div class="flex flex-col gap-0.5">
+                                    <div class="text-[10px] text-blue-400/80 font-black tracking-widest uppercase italic">${d.git || 'N/A'}</div>
+                                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tight italic">📍 ${d.municipio}</div>
+                                </div>
+                            </div>
+                            ${hasNote ? '<i class="fas fa-sticky-note text-amber-400 text-xs mt-1 animate-pulse" title="Tiene seguimiento"></i>' : ''}
                         </div>
                     </td>
                     <td class="px-8 py-6">
@@ -775,10 +965,13 @@
                         </button>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         function openModal(d) {
+            const noteKey = `note_${d.entidad}_${d.tramite}_${d.abogado}`.replace(/\s+/g, '_');
+            const savedNote = localStorage.getItem(noteKey) || '';
+            
             const content = document.getElementById('modalContent');
             const fields = [
                 { label: 'FECHA DEL RADICADO', value: d.col8 },
@@ -787,12 +980,36 @@
                 { label: 'OBSERVACIONES 2', value: d.col11 }
             ];
 
-            content.innerHTML = fields.map(f => `
-                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">${f.label}</p>
-                    <p class="text-sm text-slate-200 font-medium">${f.value || 'N/A'}</p>
+            content.innerHTML = `
+                ${fields.map(f => `
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">${f.label}</p>
+                        <p class="text-sm text-slate-200 font-medium">${f.value || 'N/A'}</p>
+                    </div>
+                `).join('')}
+                <div class="col-span-full mt-4">
+                    <div class="bg-amber-500/10 p-5 rounded-2xl border border-amber-500/20">
+                        <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <i class="fas fa-edit"></i> Seguimiento Interno (Persistente)
+                        </p>
+                        <textarea id="seguimientoNote" 
+                            class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-sm text-slate-200 outline-none focus:ring-1 focus:ring-amber-500/50 min-h-[120px] resize-none"
+                            placeholder="Escribe aquí el seguimiento de este trámite...">${savedNote}</textarea>
+                        <p class="text-[9px] text-slate-500 mt-2 italic">* Se guarda automáticamente en tu navegador mientras el trámite esté vencido.</p>
+                    </div>
                 </div>
-            `).join('');
+            `;
+
+            document.getElementById('seguimientoNote').addEventListener('input', (e) => {
+                const val = e.target.value.trim();
+                if (val) {
+                    localStorage.setItem(noteKey, val);
+                } else {
+                    localStorage.removeItem(noteKey);
+                }
+                // Actualizar icono en tiempo real sin recargar todo
+                applyFilters();
+            });
 
             document.getElementById('detailsModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
