@@ -362,6 +362,17 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
+
+        /* Sidebar Responsiva en Altura */
+        @media (max-height: 850px) {
+            .sidebar-logo-section { margin-bottom: 1.5rem !important; }
+            .sidebar-content { padding: 1rem !important; }
+            .sidebar-filters { gap: 0.75rem !important; }
+            .sidebar-footer { padding: 1rem !important; gap: 0.5rem !important; }
+            .sidebar-btn { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; font-size: 0.75rem !important; }
+            .sync-text { display: none; }
+            .filter-item { margin-bottom: 0.75rem !important; }
+        }
     </style>
 </head>
 
@@ -403,23 +414,23 @@
         <!-- Sidebar Escritorio -->
         <!-- Sidebar Escritorio -->
         <aside
-            class="w-72 glass-panel m-4 flex flex-col hidden lg:flex shadow-2xl rounded-3xl shrink-0 overflow-y-auto">
-            <div class="p-6">
-                <div class="flex items-center gap-3 mb-10">
-                    <div class="bg-blue-600 p-2 rounded-lg"><i class="fas fa-shield-alt text-white"></i></div>
-                    <h2 class="font-black text-lg uppercase">Reparto <span class="text-blue-500">2026</span></h2>
+            class="w-72 glass-panel m-4 flex flex-col hidden lg:flex shadow-2xl rounded-3xl shrink-0 overflow-hidden">
+            <div class="p-6 sidebar-content">
+                <div class="flex items-center gap-3 mb-10 sidebar-logo-section">
+                    <div class="bg-blue-600 p-2 rounded-lg shrink-0"><i class="fas fa-shield-alt text-white"></i></div>
+                    <h2 class="font-black text-lg uppercase leading-tight">Reparto <span class="text-blue-500">2026</span></h2>
                 </div>
-                <div class="space-y-6" id="desktop-filter-container"></div>
+                <div class="space-y-6 sidebar-filters" id="desktop-filter-container"></div>
             </div>
-            <div class="mt-auto p-6 space-y-4">
-                <p id="syncTime" class="text-[10px] font-mono text-emerald-400 text-center uppercase tracking-widest">
+            <div class="mt-auto p-6 space-y-4 sidebar-footer">
+                <p id="syncTime" class="text-[10px] font-mono text-emerald-400 text-center uppercase tracking-widest sync-text">
                     Sincronizado: --:--</p>
                 <button onclick="fetchData()"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl transition-all shadow-lg text-sm mb-4">
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl transition-all shadow-lg text-sm sidebar-btn">
                     FORZAR ACTUALIZACIÓN
                 </button>
                 <button onclick="exportToExcel()"
-                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 rounded-xl transition-all shadow-lg text-sm flex items-center justify-center gap-2">
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 rounded-xl transition-all shadow-lg text-sm flex items-center justify-center gap-2 sidebar-btn">
                     <i class="fas fa-file-excel"></i> EXPORTAR EXCEL
                 </button>
             </div>
@@ -553,20 +564,22 @@
     </div>
 
     <!-- Modal de Detalles -->
-    <div id="detailsModal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-4">
+    <div id="detailsModal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-2 lg:p-4">
         <div class="fixed inset-0 bg-black/80 backdrop-blur-md" onclick="closeModal()"></div>
         <div
-            class="glass-panel w-full max-w-2xl rounded-3xl overflow-hidden relative z-10 animate-in fade-in zoom-in duration-300">
-            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+            class="glass-panel w-full max-w-2xl max-h-[95vh] lg:max-h-[85vh] rounded-3xl overflow-hidden relative z-10 animate-in fade-in zoom-in duration-300 flex flex-col">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 shrink-0">
                 <h3 class="font-black text-xl uppercase tracking-tighter">Detalles Adicionales</h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-white transition-colors">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
-            <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6" id="modalContent">
-                <!-- Se llena dinámicamente -->
+            <div class="p-4 lg:p-8 overflow-y-auto custom-scrollbar flex-1" id="modalContentWrapper">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6" id="modalContent">
+                    <!-- Se llena dinámicamente -->
+                </div>
             </div>
-            <div class="p-6 border-t border-white/10 bg-white/5 flex justify-end">
+            <div class="p-4 lg:p-6 border-t border-white/10 bg-white/5 flex justify-end shrink-0">
                 <button onclick="closeModal()"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg text-sm">
                     CERRAR
