@@ -300,41 +300,67 @@
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        /* Contenedores para aislamiento de scroll */
-        .main-container {
+        /* --- Arquitectura Profesional de Layout --- */
+        .app-wrapper {
+            display: flex;
             height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background: #0b0f1a;
+        }
+
+        .main-content {
+            flex: 1;
             display: flex;
             flex-direction: column;
+            height: 100%;
             overflow: hidden;
             padding: 1rem;
         }
 
         @media (min-width: 1024px) {
-            .main-container {
-                padding: 2rem;
+            .main-content {
+                padding: 1.5rem 2rem;
             }
         }
 
-        .scrollable-table-container {
-            flex: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+        /* Cabecera Fija del Panel Derecho */
+        .right-panel-header {
+            flex-shrink: 0;
+            padding-bottom: 1.5rem;
         }
 
-        .table-scroll-area {
+        /* Área de Scroll Conjunto (KPIs + Tabla) */
+        .right-panel-scroll {
             flex: 1;
             overflow-y: auto;
-            overflow-x: auto;
+            overflow-x: hidden;
+            padding-right: 0.5rem; /* Espacio para el scrollbar */
         }
 
-        /* Cabecera de tabla pegajosa */
+        /* Sticky Table Header - Se pega al tope del scroll-container */
         thead th {
             position: sticky;
             top: 0;
             z-index: 20;
             background: #0f172a;
-            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mejoras Estéticas Premium */
+        .kpi-card {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
@@ -372,7 +398,7 @@
         </div>
     </aside>
 
-    <div class="flex h-screen overflow-hidden">
+    <div class="app-wrapper">
 
         <!-- Sidebar Escritorio -->
         <!-- Sidebar Escritorio -->
@@ -400,14 +426,14 @@
         </aside>
 
         <!-- Contenido Principal -->
-        <main class="flex-1 main-container">
-            <div class="fixed-top-section shrink-0">
-                <header class="flex flex-col gap-4 mb-6">
+        <main class="main-content">
+            <div class="right-panel-header">
+                <header class="flex flex-col gap-4">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h1 class="text-3xl lg:text-4xl font-black tracking-tight">Control de <span
+                            <h1 class="text-3xl lg:text-4xl font-black tracking-tight leading-none">Control de <span
                                     class="text-blue-500">Reparto</span></h1>
-                            <p id="currentDate" class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">
+                            <p id="currentDate" class="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mt-2">
                             </p>
                         </div>
                         <div class="flex gap-2">
@@ -424,10 +450,13 @@
                     <div class="relative w-full">
                         <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
                         <input type="text" id="mainSearch" placeholder="Buscar entidad o abogado..."
-                            class="bg-slate-900/50 border border-white/10 rounded-2xl pl-12 pr-5 py-5 text-lg outline-none focus:ring-2 focus:ring-blue-500 w-full shadow-inner text-white">
+                            class="bg-slate-900/50 border border-white/5 rounded-2xl pl-12 pr-5 py-5 text-lg outline-none focus:ring-2 focus:ring-blue-500 w-full shadow-inner text-white transition-all">
                     </div>
                 </header>
+            </div>
 
+            <!-- Área Desplazable Premium -->
+            <div class="right-panel-scroll custom-scrollbar">
                 <!-- KPIs -->
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                     <div class="kpi-card border-pink-500/40 bg-pink-500/5">
@@ -487,40 +516,39 @@
                         <div id="kpi-glow-6" class="absolute inset-0 bg-amber-500/10 opacity-0 transition-opacity">
                         </div>
                     </div>
+                    </div>
+                        <!-- Tabla -->
+                <div class="glass-panel rounded-[2rem] overflow-hidden shadow-2xl mb-8">
+                    <div class="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                        <span class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]"><i
+                                class="fas fa-list-ul mr-2 text-blue-500"></i>Listado de Trámites</span>
+                        <span id="rowCount"
+                            class="text-[10px] bg-blue-600/10 text-blue-400 px-4 py-2 rounded-full font-black tracking-widest border border-blue-500/20 uppercase">0
+                            REGISTROS</span>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse min-w-[1000px]">
+                            <thead>
+                                <tr class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] bg-black/40">
+                                    <th class="px-8 py-5">Entidad / Ubicación</th>
+                                    <th class="px-8 py-5">Trámite / Proceso</th>
+                                    <th class="px-8 py-5">Responsable / Coord</th>
+                                    <th class="px-8 py-5 text-center">
+                                        <div class="multi-select-wrapper" data-filter="alertaE" data-label="Alerta Abog">
+                                        </div>
+                                    </th>
+                                    <th class="px-8 py-5 text-center">
+                                        <div class="multi-select-wrapper" data-filter="alertaF" data-label="Alerta Ley">
+                                        </div>
+                                    </th>
+                                    <th class="px-8 py-5 text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody" class="divide-y divide-white/[0.05]"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div> <!-- Cierre de fixed-top-section -->
-
-            <!-- Tabla -->
-            <div class="scrollable-table-container glass-panel rounded-3xl overflow-hidden shadow-2xl">
-                <div class="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center shrink-0">
-                    <span class="text-sm font-bold text-slate-300 uppercase tracking-widest"><i
-                            class="fas fa-list-ul mr-2 text-blue-500"></i>Listado de Trámites</span>
-                    <span id="rowCount"
-                        class="text-xs bg-blue-600/20 text-blue-400 px-4 py-2 rounded-md font-black italic">0
-                        REGISTROS</span>
-                </div>
-                <div class="table-scroll-area custom-scrollbar">
-                    <table class="w-full text-left border-collapse min-w-[1000px]">
-                        <thead>
-                            <tr class="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] bg-black/40">
-                                <th class="px-8 py-5 border-b border-white/10">Entidad / Ubicación</th>
-                                <th class="px-8 py-5 border-b border-white/10">Trámite / Proceso</th>
-                                <th class="px-8 py-5 border-b border-white/10">Responsable / Coord</th>
-                                <th class="px-8 py-5 border-b border-white/10 text-center">
-                                    <div class="multi-select-wrapper" data-filter="alertaE" data-label="Alerta Abog">
-                                    </div>
-                                </th>
-                                <th class="px-8 py-5 border-b border-white/10 text-center">
-                                    <div class="multi-select-wrapper" data-filter="alertaF" data-label="Alerta Ley">
-                                    </div>
-                                </th>
-                                <th class="px-8 py-5 border-b border-white/10 text-center">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody" class="divide-y divide-white/[0.05]"></tbody>
-                    </table>
-                </div>
-            </div>
+            </div> <!-- Fin de right-panel-scroll -->
         </main>
     </div>
 
