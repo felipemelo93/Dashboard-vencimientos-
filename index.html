@@ -469,33 +469,7 @@
             <!-- Área Desplazable Premium -->
             <div class="right-panel-scroll custom-scrollbar">
                 <!-- KPIs -->
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-                    <div class="kpi-card border-pink-500/40 bg-pink-500/5">
-                        <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-pink-400 uppercase tracking-wider">Total en revisión
-                                pero
-                                vencido</p>
-                            <i class="fas fa-file-signature k-icon text-pink-500"></i>
-                        </div>
-                        <span id="kpi-1" class="text-4xl font-black text-pink-500">0</span>
-                    </div>
-                    <div class="kpi-card border-red-500/40 bg-red-500/5">
-                        <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-red-400 uppercase tracking-wider">⚠️ Vencido:
-                                Proyección
-                                (Abog)</p>
-                            <i class="fas fa-user-clock k-icon text-red-500"></i>
-                        </div>
-                        <span id="kpi-2" class="text-4xl font-black text-red-500">0</span>
-                    </div>
-                    <div class="kpi-card border-red-700/40 bg-red-900/10">
-                        <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-red-500 uppercase tracking-wider">⚠️ Trámites Vencidos
-                            </p>
-                            <i class="fas fa-calendar-times k-icon text-red-600"></i>
-                        </div>
-                        <span id="kpi-3" class="text-4xl font-black text-red-600">0</span>
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-8">
                     <div class="kpi-card border-orange-500/40 bg-orange-500/5">
                         <div class="flex justify-between items-start">
                             <p
@@ -514,6 +488,36 @@
                         </div>
                         <span id="kpi-5" class="text-4xl font-black text-yellow-500">0</span>
                     </div>
+                    <div class="kpi-card border-pink-500/40 bg-pink-500/5">
+                        <div class="flex justify-between items-start">
+                            <p class="text-[10px] font-black text-pink-400 uppercase tracking-wider">Total en revisión</p>
+                            <i class="fas fa-file-signature k-icon text-pink-500"></i>
+                        </div>
+                        <span id="kpi-1" class="text-4xl font-black text-pink-500">0</span>
+                    </div>
+                    <div class="kpi-card border-teal-500/40 bg-teal-500/5">
+                        <div class="flex justify-between items-start">
+                            <p class="text-[10px] font-black text-teal-400 uppercase tracking-wider">Trámites Impresos</p>
+                            <i class="fas fa-print k-icon text-teal-500"></i>
+                        </div>
+                        <span id="kpi-7" class="text-4xl font-black text-teal-500">0</span>
+                    </div>
+                    <div class="kpi-card border-indigo-500/40 bg-indigo-500/5">
+                        <div class="flex justify-between items-start">
+                            <p class="text-[10px] font-black text-indigo-400 uppercase tracking-wider">Trámites en Firma</p>
+                            <i class="fas fa-file-signature k-icon text-indigo-500"></i>
+                        </div>
+                        <span id="kpi-8" class="text-4xl font-black text-indigo-500">0</span>
+                    </div>
+                    <div class="kpi-card border-red-500/40 bg-red-500/5">
+                        <div class="flex justify-between items-start">
+                            <p class="text-[10px] font-black text-red-400 uppercase tracking-wider">⚠️ Vencido:
+                                Proyección
+                                (Abog)</p>
+                            <i class="fas fa-user-clock k-icon text-red-500"></i>
+                        </div>
+                        <span id="kpi-2" class="text-4xl font-black text-red-500">0</span>
+                    </div>
                     <div id="kpi-card-6" onclick="toggleNotesFilter(!selections.onlyNotes)"
                         class="kpi-card border-amber-500/40 bg-amber-500/5 cursor-pointer transition-all hover:scale-105 active:scale-95 group relative overflow-hidden">
                         <div class="flex justify-between items-start relative z-10">
@@ -527,15 +531,20 @@
                         <div id="kpi-glow-6" class="absolute inset-0 bg-amber-500/10 opacity-0 transition-opacity">
                         </div>
                     </div>
-                    </div>
+                </div>
                         <!-- Tabla -->
                 <div class="glass-panel rounded-[2rem] overflow-hidden shadow-2xl mb-8">
-                    <div class="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                    <div class="p-6 border-b border-white/5 bg-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <span class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]"><i
                                 class="fas fa-list-ul mr-2 text-blue-500"></i>Listado de Trámites</span>
-                        <span id="rowCount"
-                            class="text-[10px] bg-blue-600/10 text-blue-400 px-4 py-2 rounded-full font-black tracking-widest border border-blue-500/20 uppercase">0
-                            REGISTROS</span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span id="vencidosLeyBadge"
+                                class="text-[10px] bg-red-600/10 text-red-400 px-4 py-2 rounded-full font-black tracking-widest border border-red-500/20 uppercase">0 VENCIDOS LEY</span>
+                            <span id="dentroTiempoBadge"
+                                class="text-[10px] bg-yellow-600/10 text-yellow-400 px-4 py-2 rounded-full font-black tracking-widest border border-yellow-500/20 uppercase">0 DENTRO DEL TIEMPO</span>
+                            <span id="rowCount"
+                                class="text-[10px] bg-blue-600/10 text-blue-400 px-4 py-2 rounded-full font-black tracking-widest border border-blue-500/20 uppercase">0 TOTAL</span>
+                        </div>
                     </div>
                     <div class="overflow-x-auto custom-scrollbar">
                         <table class="w-full text-left border-collapse min-w-[1000px]">
@@ -837,11 +846,25 @@
                 fullData = rows.map(r => {
                     const getV = (idx) => (r.c[idx] ? (r.c[idx].f || r.c[idx].v || '').toString().trim() : '');
                     return {
-                        entidad: getV(0), municipio: getV(1), tramite: getV(2), abogado: getV(3),
-                        alertaE: getV(4), alertaF: getV(5), git: getV(6), sector: getV(7),
-                        col8: getV(8), col9: getV(9), col10: getV(10), col11: getV(11),
-                        col12: getV(12), col13: getV(13),
-                        coordinador: getV(14)
+                        git: getV(0),
+                        fechaRadicado: getV(1),
+                        entidad: getV(2),
+                        municipio: getV(3),
+                        sector: getV(4),
+                        tramite: getV(5),
+                        abogado: getV(6),
+                        alertaE: getV(7),
+                        alertaF: getV(8),
+                        fechaTerminoAbog: getV(9),
+                        fechaTerminoLey: getV(10),
+                        revisorPrimario: getV(11),
+                        obsRevisor: getV(12),
+                        revisorFinal: getV(13),
+                        obsCoordinadores: getV(14),
+                        fechaEntregaDespacho: getV(15),
+                        primerSeguimiento: getV(16),
+                        segundoSeguimiento: getV(17),
+                        coordinador: getV(21)
                     };
                 }).filter(d => d.entidad !== '' && d.entidad !== 'NOMBRE DE LA ENTIDAD');
 
@@ -939,20 +962,17 @@
         }
 
         function renderUI(data) {
-            // KPI 1: En revisión Y Vencido Ley
-            document.getElementById('kpi-1').innerText = data.filter(d => d.alertaE.toUpperCase().includes('REVISOR') && d.alertaF.toUpperCase().includes('VENCIDO')).length;
+            // KPI 1: En revisión
+            document.getElementById('kpi-1').innerText = data.filter(d => d.alertaE.toUpperCase().includes('REVISOR')).length;
 
             // KPI 2: Vencido Abogado
             document.getElementById('kpi-2').innerText = data.filter(d => d.alertaE.toUpperCase().includes('VENCIDO')).length;
 
-            // KPI 3: Vencido Ley
-            document.getElementById('kpi-3').innerText = data.filter(d => d.alertaF.toUpperCase().includes('VENCIDO')).length;
-
-            // KPI 4: Cantidad de trámites a revisar (TOTAL VISIBLE)
+            // KPI 4: Cantidad de trámites (TOTAL VISIBLE)
             document.getElementById('kpi-4').innerText = data.length;
 
-            // KPI 5: Dentro del tiempo (Columna F / Alerta Ley)
-            document.getElementById('kpi-5').innerText = data.filter(d => d.alertaF.toUpperCase().includes('TIEMPO')).length;
+            // KPI 5: Dentro del tiempo (Alerta Abogado)
+            document.getElementById('kpi-5').innerText = data.filter(d => d.alertaE.toUpperCase().includes('TIEMPO')).length;
 
             // KPI 6: En Seguimiento (Notas activas en localStorage)
             const followCount = data.filter(d => {
@@ -960,6 +980,12 @@
                 return localStorage.getItem(noteKey);
             }).length;
             document.getElementById('kpi-6').innerText = followCount;
+
+            // KPI 7: Trámites Impresos
+            document.getElementById('kpi-7').innerText = data.filter(d => d.alertaE.toUpperCase().includes('IMPRESO')).length;
+
+            // KPI 8: Trámites En Firma
+            document.getElementById('kpi-8').innerText = data.filter(d => d.alertaE.toUpperCase().includes('FIRMA')).length;
 
             // Visualización de filtro activo en KPI
             const kpiCard = document.getElementById('kpi-card-6');
@@ -972,7 +998,12 @@
                 kpiGlow.classList.replace('opacity-100', 'opacity-0');
             }
 
-            document.getElementById('rowCount').innerText = `${data.length} REGISTROS`;
+            const vencidosLeyCount = data.filter(d => d.alertaF.toUpperCase().includes('VENCIDO')).length;
+            const dentroTiempoCount = data.filter(d => d.alertaF.toUpperCase().includes('TIEMPO')).length;
+            
+            document.getElementById('vencidosLeyBadge').innerText = `${vencidosLeyCount} VENCIDOS LEY`;
+            document.getElementById('dentroTiempoBadge').innerText = `${dentroTiempoCount} DENTRO DEL TIEMPO`;
+            document.getElementById('rowCount').innerText = `${data.length} TOTAL`;
 
             // Sincronizar checkbox del sidebar
             const noteToggles = document.querySelectorAll('#noteToggle');
@@ -1030,12 +1061,16 @@
 
             const content = document.getElementById('modalContent');
             const fields = [
-                { label: 'FECHA DEL RADICADO', value: d.col8 },
-                { label: 'FECHA DE ASIGNACIÓN ', value: d.col9 },
-                { label: 'OBSERVACIONES DEL REVISOR', value: d.col10 },
-                { label: 'OBSERVACIONES 2', value: d.col11 },
-                { label: 'ESTADO DEL TRÁMITE', value: d.col12 },
-                { label: 'FECHA DE ENTREGA DESPACHO', value: d.col13 }
+                { label: 'FECHA DEL RADICADO', value: d.fechaRadicado },
+                { label: 'FECHA TÉRMINO ABOGADO', value: d.fechaTerminoAbog },
+                { label: 'FECHA TÉRMINO LEY', value: d.fechaTerminoLey },
+                { label: 'REVISOR PRIMARIO', value: d.revisorPrimario },
+                { label: 'OBSERVACIONES DEL REVISOR', value: d.obsRevisor },
+                { label: 'REVISOR FINAL', value: d.revisorFinal },
+                { label: 'OBSERVACIONES COORDINADORES', value: d.obsCoordinadores },
+                { label: 'FECHA DE ENTREGA DESPACHO', value: d.fechaEntregaDespacho },
+                { label: 'PRIMER SEGUIMIENTO', value: d.primerSeguimiento },
+                { label: 'SEGUNDO SEGUIMIENTO', value: d.segundoSeguimiento }
             ];
 
             content.innerHTML = `
@@ -1105,12 +1140,16 @@
                 "GRUPO": d.git,
                 "ALERTA ABOGADO": d.alertaE,
                 "ALERTA LEY": d.alertaF,
-                "FECHA RADICADO": d.col8,
-                "FECHA ASIGNACIÓN": d.col9,
-                "OBSERVACIONES REVISOR": d.col10,
-                "OBSERVACIONES 2": d.col11,
-                "ESTADO DEL TRÁMITE": d.col12,
-                "FECHA DEL TRÁMITE": d.col13,
+                "FECHA RADICADO": d.fechaRadicado,
+                "FECHA TÉRMINO ABOGADO": d.fechaTerminoAbog,
+                "FECHA TÉRMINO LEY": d.fechaTerminoLey,
+                "REVISOR PRIMARIO": d.revisorPrimario,
+                "OBSERVACIONES REVISOR": d.obsRevisor,
+                "REVISOR FINAL": d.revisorFinal,
+                "OBSERVACIONES COORDINADORES": d.obsCoordinadores,
+                "FECHA ENTREGA DESPACHO": d.fechaEntregaDespacho,
+                "PRIMER SEGUIMIENTO": d.primerSeguimiento,
+                "SEGUNDO SEGUIMIENTO": d.segundoSeguimiento,
                 "COORDINADOR": d.coordinador
             }));
 
