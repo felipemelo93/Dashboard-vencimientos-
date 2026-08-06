@@ -335,7 +335,8 @@
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            padding-right: 0.5rem; /* Espacio para el scrollbar */
+            padding-right: 0.5rem;
+            /* Espacio para el scrollbar */
         }
 
         /* Sticky Table Header - Se pega al tope del scroll-container */
@@ -352,7 +353,7 @@
         .kpi-card {
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        
+
         .kpi-card:hover {
             transform: translateY(-5px);
         }
@@ -365,13 +366,36 @@
 
         /* Sidebar Responsiva en Altura */
         @media (max-height: 850px) {
-            .sidebar-logo-section { margin-bottom: 1.5rem !important; }
-            .sidebar-content { padding: 1rem !important; }
-            .sidebar-filters { gap: 0.75rem !important; }
-            .sidebar-footer { padding: 1rem !important; gap: 0.5rem !important; }
-            .sidebar-btn { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; font-size: 0.75rem !important; }
-            .sync-text { display: none; }
-            .filter-item { margin-bottom: 0.75rem !important; }
+            .sidebar-logo-section {
+                margin-bottom: 1.5rem !important;
+            }
+
+            .sidebar-content {
+                padding: 1rem !important;
+            }
+
+            .sidebar-filters {
+                gap: 0.75rem !important;
+            }
+
+            .sidebar-footer {
+                padding: 1rem !important;
+                gap: 0.5rem !important;
+            }
+
+            .sidebar-btn {
+                padding-top: 0.75rem !important;
+                padding-bottom: 0.75rem !important;
+                font-size: 0.75rem !important;
+            }
+
+            .sync-text {
+                display: none;
+            }
+
+            .filter-item {
+                margin-bottom: 0.75rem !important;
+            }
         }
     </style>
 </head>
@@ -418,12 +442,14 @@
             <div class="p-6 sidebar-content">
                 <div class="flex items-center gap-3 mb-10 sidebar-logo-section">
                     <div class="bg-blue-600 p-2 rounded-lg shrink-0"><i class="fas fa-shield-alt text-white"></i></div>
-                    <h2 class="font-black text-lg uppercase leading-tight">Reparto <span class="text-blue-500">2026</span></h2>
+                    <h2 class="font-black text-lg uppercase leading-tight">Reparto <span
+                            class="text-blue-500">2026</span></h2>
                 </div>
                 <div class="space-y-6 sidebar-filters" id="desktop-filter-container"></div>
             </div>
             <div class="mt-auto p-6 space-y-4 sidebar-footer">
-                <p id="syncTime" class="text-[10px] font-mono text-emerald-400 text-center uppercase tracking-widest sync-text">
+                <p id="syncTime"
+                    class="text-[10px] font-mono text-emerald-400 text-center uppercase tracking-widest sync-text">
                     Sincronizado: --:--</p>
                 <button onclick="fetchData()"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl transition-all shadow-lg text-sm sidebar-btn">
@@ -444,7 +470,8 @@
                         <div>
                             <h1 class="text-3xl lg:text-4xl font-black tracking-tight leading-none">Control de <span
                                     class="text-blue-500">Reparto</span></h1>
-                            <p id="currentDate" class="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mt-2">
+                            <p id="currentDate"
+                                class="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mt-2">
                             </p>
                         </div>
                         <div class="flex gap-2">
@@ -490,21 +517,24 @@
                     </div>
                     <div class="kpi-card border-pink-500/40 bg-pink-500/5">
                         <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-pink-400 uppercase tracking-wider">Total en revisión</p>
+                            <p class="text-[10px] font-black text-pink-400 uppercase tracking-wider">Total en revisión
+                            </p>
                             <i class="fas fa-file-signature k-icon text-pink-500"></i>
                         </div>
                         <span id="kpi-1" class="text-4xl font-black text-pink-500">0</span>
                     </div>
                     <div class="kpi-card border-teal-500/40 bg-teal-500/5">
                         <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-teal-400 uppercase tracking-wider">Trámites Impresos</p>
+                            <p class="text-[10px] font-black text-teal-400 uppercase tracking-wider">Trámites Impresos
+                            </p>
                             <i class="fas fa-print k-icon text-teal-500"></i>
                         </div>
                         <span id="kpi-7" class="text-4xl font-black text-teal-500">0</span>
                     </div>
                     <div class="kpi-card border-indigo-500/40 bg-indigo-500/5">
                         <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-indigo-400 uppercase tracking-wider">Trámites en Firma</p>
+                            <p class="text-[10px] font-black text-indigo-400 uppercase tracking-wider">Trámites en Firma
+                            </p>
                             <i class="fas fa-file-signature k-icon text-indigo-500"></i>
                         </div>
                         <span id="kpi-8" class="text-4xl font-black text-indigo-500">0</span>
@@ -532,29 +562,33 @@
                         </div>
                     </div>
                 </div>
-                        <!-- Tabla -->
+                <!-- Tabla -->
                 <div class="glass-panel rounded-[2rem] overflow-hidden shadow-2xl mb-8">
-                    <div class="p-6 border-b border-white/5 bg-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div
+                        class="p-6 border-b border-white/5 bg-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <span class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]"><i
                                 class="fas fa-list-ul mr-2 text-blue-500"></i>Listado de Trámites</span>
                         <div class="flex flex-wrap items-center gap-2">
                             <span id="vencidosLeyBadge"
-                                class="text-[10px] bg-red-600/10 text-red-400 px-4 py-2 rounded-full font-black tracking-widest border border-red-500/20 uppercase">0 VENCIDOS LEY</span>
+                                class="text-[10px] bg-red-600/10 text-red-400 px-4 py-2 rounded-full font-black tracking-widest border border-red-500/20 uppercase">0
+                                VENCIDOS LEY</span>
                             <span id="dentroTiempoBadge"
-                                class="text-[10px] bg-yellow-600/10 text-yellow-400 px-4 py-2 rounded-full font-black tracking-widest border border-yellow-500/20 uppercase">0 DENTRO DEL TIEMPO</span>
+                                class="text-[10px] bg-yellow-600/10 text-yellow-400 px-4 py-2 rounded-full font-black tracking-widest border border-yellow-500/20 uppercase">0
+                                DENTRO DEL TIEMPO</span>
                             <span id="rowCount"
-                                class="text-[10px] bg-blue-600/10 text-blue-400 px-4 py-2 rounded-full font-black tracking-widest border border-blue-500/20 uppercase">0 TOTAL</span>
+                                class="text-[10px] bg-blue-600/10 text-blue-400 px-4 py-2 rounded-full font-black tracking-widest border border-blue-500/20 uppercase">0
+                                TOTAL</span>
                         </div>
                     </div>
                     <div class="overflow-x-auto custom-scrollbar">
                         <table class="w-full text-left border-collapse min-w-[1000px]">
                             <thead>
-                                <tr class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] bg-black/40">
-                                    <th class="px-8 py-5">Entidad / Ubicación</th>
-                                    <th class="px-8 py-5">Trámite / Proceso</th>
+                                <tr
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] bg-black/40">
+                                    <th class="px-8 py-5">Entidad / Ubicación / Trámite</th>
                                     <th class="px-8 py-5">Responsable / Coord</th>
                                     <th class="px-8 py-5 text-center">
-                                        <div class="multi-select-wrapper" data-filter="alertaE" data-label="Alerta Abog">
+                                        <div class="multi-select-wrapper" data-filter="alertaE" data-label="Estado">
                                         </div>
                                     </th>
                                     <th class="px-8 py-5 text-center">
@@ -1000,7 +1034,7 @@
 
             const vencidosLeyCount = data.filter(d => d.alertaF.toUpperCase().includes('VENCIDO')).length;
             const dentroTiempoCount = data.filter(d => d.alertaF.toUpperCase().includes('TIEMPO')).length;
-            
+
             document.getElementById('vencidosLeyBadge').innerText = `${vencidosLeyCount} VENCIDOS LEY`;
             document.getElementById('dentroTiempoBadge').innerText = `${dentroTiempoCount} DENTRO DEL TIEMPO`;
             document.getElementById('rowCount').innerText = `${data.length} TOTAL`;
@@ -1031,14 +1065,12 @@
                                 <div class="font-extrabold text-white uppercase text-[13px] leading-tight mb-1 group-hover:text-blue-400 transition-colors">${d.entidad}</div>
                                 <div class="flex flex-col gap-0.5">
                                     <div class="text-[10px] text-blue-400/80 font-black tracking-widest uppercase italic">${d.git || 'N/A'}</div>
-                                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tight italic">📍 ${d.municipio}</div>
+                                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tight italic mb-1.5">📍 ${d.municipio}</div>
+                                    <div class="text-slate-300 text-[12px] font-medium max-w-md leading-relaxed line-clamp-2" title="${d.tramite}">${d.tramite}</div>
                                 </div>
                             </div>
                             ${hasNote ? '<i class="fas fa-sticky-note text-amber-400 text-xs mt-1 animate-pulse" title="Tiene seguimiento"></i>' : ''}
                         </div>
-                    </td>
-                    <td class="px-8 py-6">
-                        <div class="text-slate-300 text-[13px] font-medium max-w-md leading-relaxed line-clamp-2" title="${d.tramite}">${d.tramite}</div>
                     </td>
                     <td class="px-8 py-6">
                         <div class="text-blue-200 font-extrabold uppercase text-[12px] mb-0.5 tracking-wide">${d.abogado || 'SIN ASIGNAR'}</div>
