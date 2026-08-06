@@ -649,13 +649,14 @@
         const dataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}`;
 
         let fullData = [];
-        let selections = { git: 'ALL', coord: 'ALL', abog: [], alertaE: [], alertaF: [], onlyNotes: false };
+        let selections = { git: 'ALL', coord: 'ALL', abog: [], revisor: [], alertaE: [], alertaF: [], onlyNotes: false };
 
         function setupFilters() {
             const containers = ['desktop-filter-container', 'mobile-filter-container'];
             const filterConfigs = [
                 { label: 'Grupo (G)', type: 'GIT', default: 'TODOS LOS GRUPOS' },
                 { label: 'Coordinación (M)', type: 'COORD', default: 'COORDINADORES' },
+                { label: 'REVISORES', type: 'REVISOR', default: 'SELECCIONAR REVISORES' },
                 { label: 'ABOGADOS', type: 'ABOG', default: 'SELECCIONAR ABOGADOS' }
             ];
 
@@ -669,11 +670,11 @@
                     const select = template.querySelector('.filter-select');
                     label.textContent = config.label;
 
-                    if (config.type === 'ABOG') {
+                    if (config.type === 'ABOG' || config.type === 'REVISOR') {
                         const wrapper = document.createElement('div');
                         wrapper.className = 'multi-select-wrapper';
-                        wrapper.setAttribute('data-filter', 'abog');
-                        wrapper.setAttribute('data-label', 'SELECCIONAR ABOGADOS');
+                        wrapper.setAttribute('data-filter', config.type === 'ABOG' ? 'abog' : 'revisor');
+                        wrapper.setAttribute('data-label', config.default);
                         select.replaceWith(wrapper);
                     } else {
                         select.setAttribute('data-type', config.type);
@@ -819,6 +820,16 @@
             let items = [];
             if (key === 'abog') {
                 items = [...new Set(fullData.filter(d => (selections.git === 'ALL' || d.git.toUpperCase() === selections.git) && (selections.coord === 'ALL' || d.coordinador.toUpperCase().includes(selections.coord))).map(d => d.abogado.toUpperCase()).filter(v => v))];
+            } else if (key === 'revisor') {
+                const revisores = fullData.map(d => {
+                    const status = d.alertaE;
+                    const parts = status.split('-');
+                    if (parts.length > 1 && (parts[0].toUpperCase().includes('REVISOR') || parts[0].toUpperCase().includes('REVISIÓ') || parts[0].toUpperCase().includes('REVISION'))) {
+                        return parts[1].trim().toUpperCase();
+                    }
+                    return null;
+                }).filter(v => v);
+                items = [...new Set(revisores)];
             } else {
                 items = [...new Set(fullData.map(d => d[key].toUpperCase()).filter(v => v))];
             }
@@ -929,6 +940,16 @@
                 let items = [];
                 if (key === 'abog') {
                     items = [...new Set(fullData.filter(d => (selections.git === 'ALL' || d.git.toUpperCase() === selections.git) && (selections.coord === 'ALL' || d.coordinador.toUpperCase().includes(selections.coord))).map(d => d.abogado).filter(v => v))].sort();
+                } else if (key === 'revisor') {
+                    const revisores = fullData.map(d => {
+                        const status = d.alertaE;
+                        const parts = status.split('-');
+                        if (parts.length > 1 && (parts[0].toUpperCase().includes('REVISOR') || parts[0].toUpperCase().includes('REVISIÓ') || parts[0].toUpperCase().includes('REVISION'))) {
+                            return parts[1].trim();
+                        }
+                        return null;
+                    }).filter(v => v);
+                    items = [...new Set(revisores)].sort();
                 } else {
                     items = [...new Set(fullData.map(d => d[key]).filter(v => v))].sort();
                 }
@@ -963,7 +984,7 @@
         }
 
         function resetFilters() {
-            selections = { git: 'ALL', coord: 'ALL', abog: [], alertaE: [], alertaF: [], onlyNotes: false };
+            selections = { git: 'ALL', coord: 'ALL', abog: [], revisor: [], alertaE: [], alertaF: [], onlyNotes: false };
             document.getElementById('mainSearch').value = '';
             document.querySelectorAll('.filter-select').forEach(s => s.value = 'ALL');
             updateAllDropdowns();
@@ -981,6 +1002,12 @@
                 if (selections.git !== 'ALL' && d.git.toUpperCase() !== selections.git) return false;
                 if (selections.coord !== 'ALL' && !d.coordinador.toUpperCase().includes(selections.coord)) return false;
                 if (selections.abog.length > 0 && !selections.abog.includes(d.abogado.toUpperCase())) return false;
+                if (selections.revisor && selections.revisor.length > 0) {
+                    const status = d.alertaE;
+                    const parts = status.split('-');
+                    const reviewer = (parts.length > 1 && (parts[0].toUpperCase().includes('REVISOR') || parts[0].toUpperCase().includes('REVISIÓ') || parts[0].toUpperCase().includes('REVISION'))) ? parts[1].trim().toUpperCase() : '';
+                    if (!selections.revisor.includes(reviewer)) return false;
+                }
                 if (selections.alertaE.length > 0 && !selections.alertaE.includes(d.alertaE.toUpperCase())) return false;
                 if (selections.alertaF.length > 0 && !selections.alertaF.includes(d.alertaF.toUpperCase())) return false;
                 if (search && !d.entidad.toLowerCase().includes(search) && !d.abogado.toLowerCase().includes(search)) return false;
