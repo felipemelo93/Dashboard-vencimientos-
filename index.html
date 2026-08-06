@@ -658,6 +658,7 @@
     <script>
         const sheetId = '1NTz2GHYql5JnbqlImPbR4gd0bNl4LZlXBiTEzNvl6Uo';
         const gid = '993887843';
+        const linkGid = '1889342205'; // GID de CONTROL REPARTO 2026-2027 (Base de Datos)
         const dataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}`;
 
         let fullData = [];
@@ -900,9 +901,38 @@
                 const json = JSON.parse(jsonText);
                 const rows = json.table.rows;
 
-                fullData = rows.map(r => {
+                // Fetch base tab to build lookup map for real database row numbers
+                const baseDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${linkGid}`;
+                const baseResponse = await fetch(baseDataUrl);
+                const baseText = await baseResponse.text();
+                const baseJsonText = baseText.substring(47).slice(0, -2);
+                const baseJson = JSON.parse(baseJsonText);
+                const baseRows = baseJson.table.rows;
+
+                const lookupMap = {};
+                baseRows.forEach((br, idx) => {
+                    if (br && br.c) {
+                        const getBaseV = (colIdx) => (br.c[colIdx] ? (br.c[colIdx].f || br.c[colIdx].v || '').toString().trim() : '');
+                        const ent = getBaseV(6);
+                        const rad = getBaseV(5);
+                        const tra = getBaseV(15);
+                        if (ent) {
+                            const key = `${ent.toUpperCase()}|${rad}|${tra.toUpperCase()}`;
+                            lookupMap[key] = idx + 1;
+                        }
+                    }
+                });
+
+                fullData = rows.map((r, index) => {
                     const getV = (idx) => (r.c[idx] ? (r.c[idx].f || r.c[idx].v || '').toString().trim() : '');
+                    const entidad = getV(2);
+                    const radicado = getV(1);
+                    const tramite = getV(5);
+                    const key = `${entidad.toUpperCase()}|${radicado}|${tramite.toUpperCase()}`;
+                    const rowNumber = lookupMap[key] || (index + 2);
+
                     return {
+                        rowNumber: rowNumber,
                         git: getV(0),
                         fechaRadicado: getV(1),
                         entidad: getV(2),
@@ -1103,7 +1133,9 @@
                     <td class="px-8 py-6">
                         <div class="flex items-start gap-2">
                             <div class="flex-1">
-                                <div class="font-extrabold text-white uppercase text-[13px] leading-tight mb-1 group-hover:text-blue-400 transition-colors">${d.entidad}</div>
+                                <a href="https://docs.google.com/spreadsheets/d/${sheetId}/edit#gid=${linkGid}&range=A${d.rowNumber}" target="_blank" class="font-extrabold text-white uppercase text-[13px] leading-tight mb-1 hover:text-blue-400 hover:underline transition-colors block">
+                                    ${d.entidad}
+                                </a>
                                 <div class="flex flex-col gap-0.5">
                                     <div class="text-[10px] text-blue-400/80 font-black tracking-widest uppercase italic">${d.git || 'N/A'}</div>
                                     <div class="text-[10px] text-slate-500 font-bold uppercase tracking-tight italic mb-1.5">📍 ${d.municipio}</div>
