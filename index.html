@@ -897,7 +897,7 @@
             try {
                 const response = await fetch(dataUrl);
                 const text = await response.text();
-                const jsonText = text.substring(47).slice(0, -2);
+                const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
                 const json = JSON.parse(jsonText);
                 const rows = json.table.rows;
 
@@ -905,7 +905,7 @@
                 const baseDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${linkGid}`;
                 const baseResponse = await fetch(baseDataUrl);
                 const baseText = await baseResponse.text();
-                const baseJsonText = baseText.substring(47).slice(0, -2);
+                const baseJsonText = baseText.substring(baseText.indexOf('{'), baseText.lastIndexOf('}') + 1);
                 const baseJson = JSON.parse(baseJsonText);
                 const baseRows = baseJson.table.rows;
 
