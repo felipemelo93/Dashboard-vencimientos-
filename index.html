@@ -83,6 +83,18 @@
             border: 1px solid rgba(168, 85, 247, 0.3);
         }
 
+        .firma {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .impreso {
+            background: rgba(20, 184, 166, 0.1);
+            color: #2dd4bf;
+            border: 1px solid rgba(20, 184, 166, 0.3);
+        }
+
         .k-icon {
             font-size: 1.25rem;
             opacity: 0.8;
@@ -1073,9 +1085,11 @@
             const getStatusClass = (t) => {
                 t = t.toUpperCase();
                 if (t.includes('VENCIDO')) return 'vencido';
-                if (t.includes('REVISOR')) return 'revisor';
+                if (t.includes('REVISOR') || t.includes('REVISIÓ') || t.includes('REVISION')) return 'revisor';
                 if (t.includes('TIEMPO')) return 'tiempo';
                 if (t.includes('LEY')) return 'ley';
+                if (t.includes('FIRMA')) return 'firma';
+                if (t.includes('IMPRESO')) return 'impreso';
                 return 'bg-slate-700/30 text-slate-500';
             };
 
