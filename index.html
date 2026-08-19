@@ -1066,7 +1066,10 @@
 
         function renderUI(data) {
             // KPI 1: En revisión
-            document.getElementById('kpi-1').innerText = data.filter(d => d.alertaE.toUpperCase().includes('REVISOR')).length;
+            document.getElementById('kpi-1').innerText = data.filter(d => {
+                const t = d.alertaE.toUpperCase().trim();
+                return t === 'REVISOR' || t.startsWith('EN REVISIÓN -') || t.startsWith('EN REVISION -');
+            }).length;
 
             // KPI 2: Vencido Abogado
             document.getElementById('kpi-2').innerText = data.filter(d => d.alertaE.toUpperCase().includes('VENCIDO')).length;
