@@ -101,6 +101,18 @@
             border: 1px solid rgba(168, 85, 247, 0.3);
         }
 
+        .pendiente-imprimir {
+            background: rgba(6, 182, 212, 0.1);
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        @media (min-width: 1280px) {
+            .kpi-card {
+                padding: 1.25rem 0.85rem;
+            }
+        }
+
         .k-icon {
             font-size: 1.25rem;
             opacity: 0.8;
@@ -514,7 +526,7 @@
             <!-- Área Desplazable Premium -->
             <div class="right-panel-scroll custom-scrollbar">
                 <!-- KPIs -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-9 gap-3 xl:gap-3.5 mb-8">
                     <div class="kpi-card border-orange-500/40 bg-orange-500/5">
                         <div class="flex justify-between items-start">
                             <p
@@ -548,6 +560,15 @@
                             <i class="fas fa-print k-icon text-teal-500"></i>
                         </div>
                         <span id="kpi-7" class="text-4xl font-black text-teal-500">0</span>
+                    </div>
+                    <div class="kpi-card border-cyan-500/40 bg-cyan-500/5">
+                        <div class="flex justify-between items-start">
+                            <p
+                                class="text-[10px] font-black text-cyan-400 uppercase tracking-wider text-wrap leading-tight">
+                                Pendientes de Imprimir</p>
+                            <i class="fas fa-copy k-icon text-cyan-500"></i>
+                        </div>
+                        <span id="kpi-9" class="text-4xl font-black text-cyan-500">0</span>
                     </div>
                     <div class="kpi-card border-indigo-500/40 bg-indigo-500/5">
                         <div class="flex justify-between items-start">
@@ -1111,6 +1132,12 @@
             // KPI 8: Trámites En Firma
             document.getElementById('kpi-8').innerText = data.filter(d => d.alertaE.toUpperCase().includes('FIRMA')).length;
 
+            // KPI 9: Pendientes de Imprimir
+            document.getElementById('kpi-9').innerText = data.filter(d => {
+                const t = d.alertaE.toUpperCase();
+                return (t.includes('PENDIENTE') && t.includes('IMPR')) || t.includes('IMPRIMIR');
+            }).length;
+
             // Visualización de filtro activo en KPI
             const kpiCard = document.getElementById('kpi-card-6');
             const kpiGlow = document.getElementById('kpi-glow-6');
@@ -1141,6 +1168,7 @@
                 if (t.includes('LEY')) return 'ley';
                 if (t.includes('FIRMA')) return 'firma';
                 if (t.includes('IMPRESO')) return 'impreso';
+                if (t.includes('IMPRIMIR')) return 'pendiente-imprimir';
                 if (t.includes('DEVOLUC')) return 'devolucion';
                 return 'bg-slate-700/30 text-slate-500';
             };
