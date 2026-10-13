@@ -32,20 +32,74 @@
         }
 
         .kpi-card {
-            border-radius: 24px;
-            padding: 1.5rem;
-            border: 1.5px solid;
+            border-radius: 12px;
+            padding: 0.45rem 0.55rem;
+            border: 1px solid;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
-            min-height: 120px;
+            min-height: 56px;
+            max-height: 62px;
+            position: relative;
+            overflow: hidden;
         }
 
         .kpi-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px -3px rgba(0, 0, 0, 0.4);
+        }
+
+        .kpi-card .k-label {
+            font-size: 7.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            line-height: 1.1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .kpi-card .k-icon {
+            font-size: 0.7rem;
+            opacity: 0.75;
+            margin-bottom: 0;
+            flex-shrink: 0;
+            margin-left: 2px;
+        }
+
+        .kpi-card .k-value {
+            font-size: 1.2rem;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            margin-top: 0.15rem;
+        }
+
+        /* KPI Grid ultra compacto y adaptativo */
+        .kpi-grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.35rem;
+            margin-bottom: 0.65rem;
+        }
+
+        @media (min-width: 640px) {
+            .kpi-grid-container {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+                gap: 0.45rem;
+            }
+        }
+
+        @media (min-width: 1100px) {
+            .kpi-grid-container {
+                grid-template-columns: repeat(9, minmax(0, 1fr)) !important;
+                gap: 0.35rem;
+                margin-bottom: 0.75rem;
+            }
         }
 
         .status-pill {
@@ -109,32 +163,38 @@
 
         @media (max-width: 640px) {
             .kpi-card {
-                padding: 0.85rem 0.75rem !important;
-                min-height: 90px !important;
-                border-radius: 16px !important;
+                padding: 0.4rem 0.45rem !important;
+                min-height: 52px !important;
+                max-height: 58px !important;
+                border-radius: 10px !important;
             }
-            .kpi-card .text-4xl {
-                font-size: 1.5rem !important;
+            .kpi-card .k-value {
+                font-size: 1.1rem !important;
             }
-            .kpi-card p {
-                font-size: 8.5px !important;
+            .kpi-card .k-label {
+                font-size: 7px !important;
             }
             .kpi-card .k-icon {
-                font-size: 0.95rem !important;
-                margin-bottom: 0.2rem !important;
+                font-size: 0.65rem !important;
             }
         }
 
-        @media (min-width: 1280px) {
+        @media (min-width: 1536px) {
             .kpi-card {
-                padding: 1.25rem 0.95rem;
+                padding: 0.55rem 0.65rem;
+                min-height: 62px;
+                max-height: 68px;
+                border-radius: 14px;
             }
-        }
-
-        .k-icon {
-            font-size: 1.25rem;
-            opacity: 0.8;
-            margin-bottom: 0.5rem;
+            .kpi-card .k-value {
+                font-size: 1.35rem;
+            }
+            .kpi-card .k-label {
+                font-size: 8.5px;
+            }
+            .kpi-card .k-icon {
+                font-size: 0.8rem;
+            }
         }
 
         #mobile-filters {
@@ -202,9 +262,10 @@
 
         .multi-select-dropdown {
             position: fixed;
-            z-index: 999999;
+            z-index: 9999999;
             width: 285px;
             max-width: min(340px, 92vw);
+            max-height: min(360px, 80vh);
             display: none;
             flex-direction: column;
             border-radius: 1.25rem;
@@ -485,40 +546,72 @@
         /* --- Arquitectura Profesional de Layout --- */
         .app-wrapper {
             display: flex;
-            height: 100vh;
+            flex-direction: column;
+            min-height: 100vh;
             width: 100vw;
-            overflow: hidden;
+            max-width: 100%;
             background: #0b0f1a;
+            overflow-x: hidden;
+        }
+
+        @media (min-width: 1024px) {
+            .app-wrapper {
+                flex-direction: row;
+                height: 100vh;
+                overflow: hidden;
+            }
         }
 
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-            padding: 1rem;
+            min-height: 100vh;
+            padding: 0.75rem 0.85rem 2.5rem 0.85rem;
+            position: relative;
+        }
+
+        @media (min-width: 640px) {
+            .main-content {
+                padding: 1rem 1.25rem 2.5rem 1.25rem;
+            }
         }
 
         @media (min-width: 1024px) {
             .main-content {
-                padding: 1.5rem 2rem;
+                height: 100vh;
+                min-height: 0;
+                overflow: hidden;
+                padding: 1.25rem 1.75rem;
             }
         }
 
-        /* Cabecera Fija del Panel Derecho */
+        /* Cabecera Fija / Sticky del Panel Derecho */
         .right-panel-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: rgba(11, 15, 26, 0.96);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 0.5rem 0 1rem 0;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             flex-shrink: 0;
-            padding-bottom: 1.5rem;
         }
 
         /* Área de Scroll Conjunto (KPIs + Tabla) */
         .right-panel-scroll {
             flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding-right: 0.5rem;
-            /* Espacio para el scrollbar */
+            overflow-y: visible;
+        }
+
+        @media (min-width: 1024px) {
+            .right-panel-scroll {
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding-right: 0.35rem;
+            }
         }
 
         /* Sticky Table Header - Se pega al tope del scroll-container */
@@ -657,30 +750,30 @@
         <!-- Contenido Principal -->
         <main class="main-content">
             <div class="right-panel-header">
-                <header class="flex flex-col gap-4">
-                    <div class="flex justify-between items-center">
+                <header class="flex flex-col gap-2 sm:gap-2.5">
+                    <div class="flex justify-between items-center gap-2">
                         <div>
-                            <h1 class="text-3xl lg:text-4xl font-black tracking-tight leading-none">Control de <span
+                            <h1 class="text-xl sm:text-2xl font-black tracking-tight leading-none">Control de <span
                                     class="text-blue-500">Reparto</span></h1>
                             <p id="currentDate"
-                                class="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mt-2">
+                                class="text-slate-500 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] mt-1">
                             </p>
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 shrink-0">
                             <button onclick="toggleMobileMenu()"
-                                class="lg:hidden bg-blue-600/20 text-blue-500 px-5 py-3 rounded-xl border border-blue-500/30 font-black text-sm flex items-center gap-2">
-                                <i class="fas fa-filter"></i> FILTROS
+                                class="lg:hidden bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-2 rounded-xl border border-blue-500/30 font-black text-xs flex items-center gap-1.5 active:scale-95 transition-all">
+                                <i class="fas fa-filter text-xs"></i> <span>FILTROS</span>
                             </button>
                             <button onclick="exportToExcel()"
-                                class="lg:hidden bg-emerald-600/20 text-emerald-500 px-5 py-3 rounded-xl border border-emerald-500/30 font-black text-sm flex items-center gap-2">
-                                <i class="fas fa-file-excel"></i> EXPORTAR
+                                class="lg:hidden bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 px-3 py-2 rounded-xl border border-emerald-500/30 font-black text-xs flex items-center gap-1.5 active:scale-95 transition-all">
+                                <i class="fas fa-file-excel text-xs"></i> <span>EXPORTAR</span>
                             </button>
                         </div>
                     </div>
                     <div class="relative w-full">
-                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
+                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs sm:text-sm pointer-events-none"></i>
                         <input type="text" id="mainSearch" placeholder="Buscar entidad o abogado..."
-                            class="bg-slate-900/50 border border-white/5 rounded-2xl pl-12 pr-5 py-5 text-lg outline-none focus:ring-2 focus:ring-blue-500 w-full shadow-inner text-white transition-all">
+                            class="bg-slate-900/60 border border-white/10 rounded-xl pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-blue-500 w-full shadow-inner text-white transition-all placeholder:text-slate-500">
                     </div>
                 </header>
             </div>
@@ -688,124 +781,113 @@
             <!-- Área Desplazable Premium -->
             <div class="right-panel-scroll custom-scrollbar">
                 <!-- KPIs -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-9 gap-3 xl:gap-3.5 mb-8">
+                <div class="kpi-grid-container">
                     <div class="kpi-card border-orange-500/40 bg-orange-500/5">
-                        <div class="flex justify-between items-start">
-                            <p
-                                class="text-[10px] font-black text-orange-400 uppercase tracking-wider text-wrap leading-tight">
-                                Cantidad de Trámites</p>
+                        <div class="flex justify-between items-start gap-1">
+                            <p class="k-label text-orange-400" title="Cantidad de Trámites">Cantidad Trámites</p>
                             <i class="fas fa-list-check k-icon text-orange-500"></i>
                         </div>
-                        <span id="kpi-4" class="text-4xl font-black text-orange-500">0</span>
+                        <span id="kpi-4" class="k-value text-orange-500">0</span>
                     </div>
                     <div class="kpi-card border-yellow-500/40 bg-yellow-500/5">
-                        <div class="flex justify-between items-start">
-                            <p
-                                class="text-[10px] font-black text-yellow-500 uppercase tracking-wider text-wrap leading-tight">
-                                Dentro del tiempo</p>
+                        <div class="flex justify-between items-start gap-1">
+                            <p class="k-label text-yellow-500" title="Dentro del tiempo">En Tiempo</p>
                             <i class="fas fa-hourglass-start k-icon text-yellow-500"></i>
                         </div>
-                        <span id="kpi-5" class="text-4xl font-black text-yellow-500">0</span>
+                        <span id="kpi-5" class="k-value text-yellow-500">0</span>
                     </div>
                     <div class="kpi-card border-pink-500/40 bg-pink-500/5">
-                        <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-pink-400 uppercase tracking-wider">Total en revisión
-                            </p>
+                        <div class="flex justify-between items-start gap-1">
+                            <p class="k-label text-pink-400" title="Total en revisión">En Revisión</p>
                             <i class="fas fa-file-signature k-icon text-pink-500"></i>
                         </div>
-                        <span id="kpi-1" class="text-4xl font-black text-pink-500">0</span>
+                        <span id="kpi-1" class="k-value text-pink-500">0</span>
                     </div>
                     <div class="kpi-card border-teal-500/40 bg-teal-500/5">
-                        <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-teal-400 uppercase tracking-wider">Trámites Impresos
-                            </p>
+                        <div class="flex justify-between items-start gap-1">
+                            <p class="k-label text-teal-400" title="Trámites Impresos">Impresos</p>
                             <i class="fas fa-print k-icon text-teal-500"></i>
                         </div>
-                        <span id="kpi-7" class="text-4xl font-black text-teal-500">0</span>
+                        <span id="kpi-7" class="k-value text-teal-500">0</span>
                     </div>
                     <div class="kpi-card border-cyan-500/40 bg-cyan-500/5">
-                        <div class="flex justify-between items-start">
-                            <p
-                                class="text-[10px] font-black text-cyan-400 uppercase tracking-wider text-wrap leading-tight">
-                                Pendientes de Imprimir</p>
+                        <div class="flex justify-between items-start gap-1">
+                            <p class="k-label text-cyan-400" title="Pendientes de Imprimir">Pend. Imprimir</p>
                             <i class="fas fa-copy k-icon text-cyan-500"></i>
                         </div>
-                        <span id="kpi-9" class="text-4xl font-black text-cyan-500">0</span>
+                        <span id="kpi-9" class="k-value text-cyan-500">0</span>
                     </div>
                     <div class="kpi-card border-indigo-500/40 bg-indigo-500/5">
-                        <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-indigo-400 uppercase tracking-wider">Trámites en Firma
-                            </p>
+                        <div class="flex justify-between items-start gap-1">
+                            <p class="k-label text-indigo-400" title="Trámites en Firma">En Firma</p>
                             <i class="fas fa-file-signature k-icon text-indigo-500"></i>
                         </div>
-                        <span id="kpi-8" class="text-4xl font-black text-indigo-500">0</span>
+                        <span id="kpi-8" class="k-value text-indigo-500">0</span>
                     </div>
                     <div class="kpi-card border-red-500/40 bg-red-500/5">
-                        <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-red-400 uppercase tracking-wider">⚠️ Vencido:
-                                Proyección
-                                (Abog)</p>
+                        <div class="flex justify-between items-start gap-1">
+                            <p class="k-label text-red-400" title="Vencido: Proyección (Abog)">Vencidos Abog</p>
                             <i class="fas fa-user-clock k-icon text-red-500"></i>
                         </div>
-                        <span id="kpi-2" class="text-4xl font-black text-red-500">0</span>
+                        <span id="kpi-2" class="k-value text-red-500">0</span>
                     </div>
                     <div class="kpi-card border-purple-500/40 bg-purple-500/5">
-                        <div class="flex justify-between items-start">
-                            <p
-                                class="text-[10px] font-black text-purple-400 uppercase tracking-wider text-wrap leading-tight">
-                                Devoluciones</p>
+                        <div class="flex justify-between items-start gap-1">
+                            <p class="k-label text-purple-400" title="Devoluciones">Devoluciones</p>
                             <i class="fas fa-undo k-icon text-purple-500"></i>
                         </div>
-                        <span id="kpi-3" class="text-4xl font-black text-purple-500">0</span>
+                        <span id="kpi-3" class="k-value text-purple-500">0</span>
                     </div>
                     <div id="kpi-card-6" onclick="toggleNotesFilter(!selections.onlyNotes)"
                         class="kpi-card border-amber-500/40 bg-amber-500/5 cursor-pointer transition-all hover:scale-105 active:scale-95 group relative overflow-hidden">
-                        <div class="flex justify-between items-start relative z-10">
-                            <p
-                                class="text-[10px] font-black text-amber-500 uppercase tracking-wider text-wrap leading-tight">
-                                En Seguimiento</p>
-                            <i
-                                class="fas fa-sticky-note k-icon text-amber-500 group-hover:rotate-12 transition-transform"></i>
+                        <div class="flex justify-between items-start gap-1 relative z-10">
+                            <p class="k-label text-amber-500" title="En Seguimiento">Seguimiento</p>
+                            <i class="fas fa-sticky-note k-icon text-amber-500 group-hover:rotate-12 transition-transform"></i>
                         </div>
-                        <span id="kpi-6" class="text-4xl font-black text-amber-500 relative z-10">0</span>
+                        <span id="kpi-6" class="k-value text-amber-500 relative z-10">0</span>
                         <div id="kpi-glow-6" class="absolute inset-0 bg-amber-500/10 opacity-0 transition-opacity">
                         </div>
                     </div>
                 </div>
                 <!-- Tabla -->
-                <div class="glass-panel rounded-2xl sm:rounded-[2rem] overflow-hidden shadow-2xl mb-8 min-h-[260px] flex flex-col">
+                <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl mb-6 min-h-[360px] flex flex-col">
                     <div
-                        class="p-4 sm:p-6 border-b border-white/5 bg-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <span class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]"><i
-                                class="fas fa-list-ul mr-2 text-blue-500"></i>Listado de Trámites</span>
+                        class="p-3 sm:p-4 border-b border-white/5 bg-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div class="flex items-center gap-3 flex-wrap">
+                            <span class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]"><i
+                                    class="fas fa-list-ul mr-2 text-blue-500"></i>Listado de Trámites</span>
+                            <span class="text-[10px] text-blue-400 font-bold xl:hidden flex items-center gap-1.5 bg-blue-500/10 px-2.5 py-1 rounded-lg border border-blue-500/20">
+                                <i class="fas fa-arrows-left-right animate-pulse text-[9px]"></i> Desliza horizontal
+                            </span>
+                        </div>
                         <div class="flex flex-wrap items-center gap-2">
                             <span id="vencidosLeyBadge"
-                                class="text-[10px] bg-red-600/10 text-red-400 px-4 py-2 rounded-full font-black tracking-widest border border-red-500/20 uppercase">0
+                                class="text-[10px] bg-red-600/10 text-red-400 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-black tracking-widest border border-red-500/20 uppercase">0
                                 VENCIDOS LEY</span>
                             <span id="dentroTiempoBadge"
-                                class="text-[10px] bg-yellow-600/10 text-yellow-400 px-4 py-2 rounded-full font-black tracking-widest border border-yellow-500/20 uppercase">0
+                                class="text-[10px] bg-yellow-600/10 text-yellow-400 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-black tracking-widest border border-yellow-500/20 uppercase">0
                                 DENTRO DEL TIEMPO</span>
                             <span id="rowCount"
-                                class="text-[10px] bg-blue-600/10 text-blue-400 px-4 py-2 rounded-full font-black tracking-widest border border-blue-500/20 uppercase">0
+                                class="text-[10px] bg-blue-600/10 text-blue-400 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-black tracking-widest border border-blue-500/20 uppercase">0
                                 TOTAL</span>
                         </div>
                     </div>
                     <div class="overflow-x-auto custom-scrollbar flex-1">
-                        <table class="w-full text-left border-collapse min-w-[1000px]">
+                        <table class="w-full text-left border-collapse min-w-[780px] xl:min-w-full">
                             <thead>
                                 <tr
                                     class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] bg-black/40">
-                                    <th class="px-8 py-5">Entidad / Ubicación / Trámite</th>
-                                    <th class="px-8 py-5">Responsable / Coord</th>
-                                    <th class="px-8 py-5 text-center">
+                                    <th class="px-4 sm:px-6 py-4">Entidad / Ubicación / Trámite</th>
+                                    <th class="px-4 sm:px-6 py-4">Responsable / Coord</th>
+                                    <th class="px-4 sm:px-6 py-4 text-center">
                                         <div class="multi-select-wrapper" data-filter="alertaE" data-label="Estado">
                                         </div>
                                     </th>
-                                    <th class="px-8 py-5 text-center">
+                                    <th class="px-4 sm:px-6 py-4 text-center">
                                         <div class="multi-select-wrapper" data-filter="alertaF" data-label="Alerta Ley">
                                         </div>
                                     </th>
-                                    <th class="px-8 py-5 text-center">Acción</th>
+                                    <th class="px-4 sm:px-6 py-4 text-center">Acción</th>
                                 </tr>
                             </thead>
                             <tbody id="tableBody" class="divide-y divide-white/[0.05]"></tbody>
@@ -864,29 +946,32 @@
 
         function positionDropdown(btn, dropdown, isSidebar) {
             const rect = btn.getBoundingClientRect();
-            const dropdownWidth = isSidebar ? Math.max(rect.width, 275) : 285;
-            const finalWidth = Math.min(dropdownWidth, window.innerWidth - 16);
+            const defaultWidth = isSidebar ? Math.max(rect.width, 260) : 280;
+            const finalWidth = Math.min(defaultWidth, window.innerWidth - 20);
             
             dropdown.style.position = 'fixed';
-            dropdown.style.zIndex = '999999';
+            dropdown.style.zIndex = '9999999';
             dropdown.style.width = `${finalWidth}px`;
-            dropdown.style.maxWidth = 'min(340px, 92vw)';
+            dropdown.style.maxWidth = 'calc(100vw - 20px)';
+            dropdown.style.maxHeight = 'min(360px, 80vh)';
 
-            // Horizontal: garantizar que siempre esté dentro de los límites de la pantalla
+            // Horizontal: garantizar que siempre esté dentro de los límites visibles de la pantalla
             let left = rect.left;
-            if (left + finalWidth > window.innerWidth - 12) {
-                left = window.innerWidth - finalWidth - 12;
+            if (left + finalWidth > window.innerWidth - 10) {
+                left = window.innerWidth - finalWidth - 10;
             }
-            if (left < 8) left = 8;
+            if (left < 10) left = 10;
             dropdown.style.left = `${left}px`;
             dropdown.style.right = 'auto';
 
-            // Vertical: si abajo hay poco espacio (menos de 310px) y arriba hay más, abrir hacia arriba
+            // Vertical: cálculo inteligente para abrir hacia arriba si abajo no hay espacio
             const spaceBelow = window.innerHeight - rect.bottom;
-            const estHeight = 310;
-            if (spaceBelow < estHeight && rect.top > estHeight) {
+            const spaceAbove = rect.top;
+            const estHeight = 290;
+
+            if (spaceBelow < estHeight && spaceAbove > spaceBelow) {
                 dropdown.style.top = 'auto';
-                dropdown.style.bottom = `${window.innerHeight - rect.top + 6}px`;
+                dropdown.style.bottom = `${Math.max(10, window.innerHeight - rect.top + 6)}px`;
             } else {
                 dropdown.style.top = `${rect.bottom + 6}px`;
                 dropdown.style.bottom = 'auto';
