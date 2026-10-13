@@ -107,9 +107,27 @@
             border: 1px solid rgba(6, 182, 212, 0.3);
         }
 
+        @media (max-width: 640px) {
+            .kpi-card {
+                padding: 0.85rem 0.75rem !important;
+                min-height: 90px !important;
+                border-radius: 16px !important;
+            }
+            .kpi-card .text-4xl {
+                font-size: 1.5rem !important;
+            }
+            .kpi-card p {
+                font-size: 8.5px !important;
+            }
+            .kpi-card .k-icon {
+                font-size: 0.95rem !important;
+                margin-bottom: 0.2rem !important;
+            }
+        }
+
         @media (min-width: 1280px) {
             .kpi-card {
-                padding: 1.25rem 0.85rem;
+                padding: 1.25rem 0.95rem;
             }
         }
 
@@ -170,164 +188,298 @@
             color: white;
         }
 
-        /* Multi-selection styles */
+        /* ==========================================================================
+           Multi-selection Dropdown System (Ultra Premium & Fully Responsive)
+           ========================================================================== */
         .multi-select-wrapper {
             position: relative;
+            width: 100%;
+        }
+
+        .multi-select-wrapper.is-open {
+            z-index: 100;
         }
 
         .multi-select-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            z-index: 50;
-            margin-top: 0.5rem;
-            max-height: 350px;
+            position: fixed;
+            z-index: 999999;
+            width: 285px;
+            max-width: min(340px, 92vw);
             display: none;
             flex-direction: column;
             border-radius: 1.25rem;
             overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            background: #0f172a !important;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(24px);
+            animation: dropdownEnter 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes dropdownEnter {
+            from {
+                opacity: 0;
+                transform: translateY(-4px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .multi-select-dropdown.active {
             display: flex;
         }
 
-        .multi-checkbox {
-            width: 1.1rem;
-            height: 1.1rem;
-            accent-color: #3b82f6;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .dropdown-item {
+        /* Encabezado del Dropdown */
+        .dropdown-header-bar {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
+            justify-content: space-between;
+            padding: 0.65rem 0.85rem;
+            background: rgba(15, 23, 42, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
         }
 
-        .dropdown-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .dropdown-actions {
-            display: flex;
-            gap: 1px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 0.6rem;
-            font-size: 9px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #94a3b8;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover {
-            color: #3b82f6;
-            background: rgba(59, 130, 246, 0.1);
-        }
-
-        /* Custom Checkbox */
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            padding: 0.85rem 1.25rem;
-            gap: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-        }
-
-        .checkbox-container:hover {
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .custom-cb {
-            width: 1.25rem;
-            height: 1.25rem;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        .checkbox-container.checked .custom-cb {
-            background: #3b82f6;
-            border-color: #3b82f6;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
-        }
-
-        .checkbox-container.checked[data-val*="VENCIDO"] .custom-cb {
-            background: #ef4444;
-            border-color: #ef4444;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
-        }
-
-        .checkbox-container.checked[data-val*="REVISOR"] .custom-cb {
-            background: #ec4899;
-            border-color: #ec4899;
-            box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
-        }
-
-        .custom-cb::after {
-            content: '✓';
-            color: white;
+        .dropdown-badge-counter {
             font-size: 10px;
-            font-weight: 900;
-            display: none;
-        }
-
-        .checkbox-container.checked .custom-cb::after {
-            display: block;
-        }
-
-        .cb-label {
-            font-size: 11px;
             font-weight: 800;
-            color: #94a3b8;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
+            letter-spacing: 0.08em;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
         }
 
-        .checkbox-container.checked .cb-label {
-            color: white;
+        .dropdown-badge-counter .dot-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #3b82f6;
+            box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
         }
 
-        .dropdown-search-wrapper {
-            padding: 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        .dropdown-pills-actions {
+            display: flex;
+            gap: 0.35rem;
         }
 
-        .dropdown-search {
+        .action-pill-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .action-pill-btn:hover {
+            color: #ffffff;
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .action-pill-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Buscador integrado */
+        .dropdown-search-box {
+            padding: 0.55rem 0.75rem 0.45rem 0.75rem;
+            background: rgba(15, 23, 42, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .search-field-container {
+            position: relative;
+            display: flex;
+            align-items: center;
             width: 100%;
-            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .search-field-container .search-ico {
+            position: absolute;
+            left: 0.75rem;
+            font-size: 11px;
+            color: #64748b;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .dropdown-search-input {
+            width: 100%;
+            background: rgba(30, 41, 59, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.75rem;
-            padding: 0.6rem 1rem;
-            font-size: 12px;
-            color: white;
+            border-radius: 10px;
+            padding: 0.45rem 1.8rem 0.45rem 2.1rem;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #ffffff;
             outline: none;
             transition: all 0.2s;
         }
 
-        .dropdown-search:focus {
+        .dropdown-search-input:focus {
             border-color: #3b82f6;
-            background: rgba(0, 0, 0, 0.5);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+        }
+
+        .search-field-container:focus-within .search-ico {
+            color: #3b82f6;
+        }
+
+        .dropdown-search-input::placeholder {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Lista scrollable */
+        .dropdown-scroll-list {
+            padding: 0.4rem 0.5rem;
+            max-height: 230px;
+            overflow-y: auto;
+            background: #0f172a;
+        }
+
+        /* Item de selección */
+        .ms-item-row {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.5rem 0.65rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            user-select: none;
+            margin: 2px 0;
+            border: 1px solid transparent;
+        }
+
+        .ms-item-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.04);
+        }
+
+        .ms-item-row.checked {
+            background: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        /* Checkbox Moderno */
+        .ms-checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid rgba(255, 255, 255, 0.22);
+            background: rgba(15, 23, 42, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ms-item-row:hover .ms-checkbox {
+            border-color: rgba(59, 130, 246, 0.6);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .ms-item-row.checked .ms-checkbox {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .ms-checkbox-check {
+            font-size: 10px;
+            color: white;
+            opacity: 0;
+            transform: scale(0.6);
+            transition: all 0.15s ease-in-out;
+        }
+
+        .ms-item-row.checked .ms-checkbox-check {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Avatar de iniciales para personas (abogados / revisores) */
+        .ms-avatar-badge {
+            width: 24px;
+            height: 24px;
+            border-radius: 7px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(99, 102, 241, 0.12) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #93c5fd;
+            font-size: 9.5px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            letter-spacing: -0.02em;
+            transition: all 0.2s;
+        }
+
+        .ms-item-row:hover .ms-avatar-badge {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%);
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .ms-item-row.checked .ms-avatar-badge {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            border-color: #60a5fa;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Texto del label */
+        .ms-item-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: color 0.15s;
+        }
+
+        .ms-item-row:hover .ms-item-label {
+            color: #ffffff;
+        }
+
+        .ms-item-row.checked .ms-item-label {
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        /* Estado sin resultados */
+        .ms-empty-state {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.35rem;
         }
 
         /* --- Arquitectura Profesional de Layout --- */
@@ -392,6 +544,16 @@
             background: rgba(30, 41, 59, 0.5);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-content {
+            position: relative;
+            z-index: 20;
+        }
+
+        .sidebar-footer {
+            position: relative;
+            z-index: 10;
         }
 
         /* Sidebar Responsiva en Altura */
@@ -526,7 +688,7 @@
             <!-- Área Desplazable Premium -->
             <div class="right-panel-scroll custom-scrollbar">
                 <!-- KPIs -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-9 gap-3 xl:gap-3.5 mb-8">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-9 gap-3 xl:gap-3.5 mb-8">
                     <div class="kpi-card border-orange-500/40 bg-orange-500/5">
                         <div class="flex justify-between items-start">
                             <p
@@ -611,9 +773,9 @@
                     </div>
                 </div>
                 <!-- Tabla -->
-                <div class="glass-panel rounded-[2rem] overflow-hidden shadow-2xl mb-8">
+                <div class="glass-panel rounded-2xl sm:rounded-[2rem] overflow-hidden shadow-2xl mb-8 min-h-[260px] flex flex-col">
                     <div
-                        class="p-6 border-b border-white/5 bg-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        class="p-4 sm:p-6 border-b border-white/5 bg-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <span class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]"><i
                                 class="fas fa-list-ul mr-2 text-blue-500"></i>Listado de Trámites</span>
                         <div class="flex flex-wrap items-center gap-2">
@@ -628,7 +790,7 @@
                                 TOTAL</span>
                         </div>
                     </div>
-                    <div class="overflow-x-auto custom-scrollbar">
+                    <div class="overflow-x-auto custom-scrollbar flex-1">
                         <table class="w-full text-left border-collapse min-w-[1000px]">
                             <thead>
                                 <tr
@@ -700,7 +862,47 @@
         let fullData = [];
         let selections = { git: 'ALL', coord: 'ALL', abog: [], revisor: [], alertaE: [], alertaF: [], onlyNotes: false };
 
+        function positionDropdown(btn, dropdown, isSidebar) {
+            const rect = btn.getBoundingClientRect();
+            const dropdownWidth = isSidebar ? Math.max(rect.width, 275) : 285;
+            const finalWidth = Math.min(dropdownWidth, window.innerWidth - 16);
+            
+            dropdown.style.position = 'fixed';
+            dropdown.style.zIndex = '999999';
+            dropdown.style.width = `${finalWidth}px`;
+            dropdown.style.maxWidth = 'min(340px, 92vw)';
+
+            // Horizontal: garantizar que siempre esté dentro de los límites de la pantalla
+            let left = rect.left;
+            if (left + finalWidth > window.innerWidth - 12) {
+                left = window.innerWidth - finalWidth - 12;
+            }
+            if (left < 8) left = 8;
+            dropdown.style.left = `${left}px`;
+            dropdown.style.right = 'auto';
+
+            // Vertical: si abajo hay poco espacio (menos de 310px) y arriba hay más, abrir hacia arriba
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const estHeight = 310;
+            if (spaceBelow < estHeight && rect.top > estHeight) {
+                dropdown.style.top = 'auto';
+                dropdown.style.bottom = `${window.innerHeight - rect.top + 6}px`;
+            } else {
+                dropdown.style.top = `${rect.bottom + 6}px`;
+                dropdown.style.bottom = 'auto';
+            }
+        }
+
+        function closeAllDropdowns() {
+            document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('active'));
+            document.querySelectorAll('.multi-select-btn .fa-chevron-down').forEach(i => i.classList.remove('rotate-180'));
+            document.querySelectorAll('.multi-select-wrapper').forEach(w => w.classList.remove('is-open'));
+        }
+
         function setupFilters() {
+            // Limpiar dropdowns previos del body si existieran
+            document.querySelectorAll('.multi-select-dropdown').forEach(d => d.remove());
+
             const containers = ['desktop-filter-container', 'mobile-filter-container'];
             const filterConfigs = [
                 { label: 'Grupo (G)', type: 'GIT', default: 'TODOS LOS GRUPOS' },
@@ -763,9 +965,21 @@
                 container.appendChild(followUpSection);
             });
 
-            document.addEventListener('click', () => {
-                document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('active'));
-                document.querySelectorAll('.fa-chevron-down').forEach(i => i.classList.remove('rotate-180'));
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.multi-select-dropdown') && !e.target.closest('.multi-select-btn')) {
+                    closeAllDropdowns();
+                }
+            });
+
+            window.addEventListener('scroll', (e) => {
+                if (e.target && e.target.classList && e.target.classList.contains('dropdown-scroll-list')) return;
+                closeAllDropdowns();
+            }, true);
+
+            window.addEventListener('resize', closeAllDropdowns);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeAllDropdowns();
             });
         }
 
@@ -773,88 +987,155 @@
             const filterKey = wrapper.getAttribute('data-filter');
             const placeholder = wrapper.getAttribute('data-label');
             const isSidebar = wrapper.closest('aside') !== null;
+            const isPerson = filterKey === 'abog' || filterKey === 'revisor';
 
-            // Inicializar estructura si no existe
+            const getInitials = (str) => {
+                const parts = str.trim().split(/\s+/).filter(p => p.length > 0);
+                if (parts.length === 0) return '•';
+                if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            };
+
+            // Inicializar botón en el wrapper si no existe
             if (!wrapper.querySelector('.multi-select-btn')) {
                 const btnClasses = isSidebar
-                    ? "multi-select-btn w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white flex justify-between items-center shadow-lg transition-all hover:border-blue-500/50"
-                    : "multi-select-btn w-full bg-transparent p-2 text-[11px] font-black text-slate-500 uppercase tracking-widest flex justify-between items-center transition-all hover:text-blue-400";
+                    ? "multi-select-btn w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white flex justify-between items-center shadow-lg transition-all hover:border-blue-500/50 group"
+                    : "multi-select-btn w-full bg-transparent p-2 text-[11px] font-black text-slate-500 uppercase tracking-widest flex justify-between items-center transition-all hover:text-blue-400 group";
 
-                const iconClasses = isSidebar ? "text-slate-500 text-xs" : "text-[9px] opacity-50";
+                const iconClasses = isSidebar ? "text-slate-500 text-xs group-hover:text-blue-400" : "text-[9px] opacity-50 group-hover:opacity-100";
 
                 wrapper.innerHTML = `
-                    <button class="${btnClasses}">
-                        <span class="btn-text truncate">${placeholder}</span>
-                        <i class="fas fa-chevron-down ${iconClasses} transition-transform"></i>
+                    <button class="${btnClasses}" type="button">
+                        <div class="flex items-center gap-2 truncate">
+                            <span class="btn-text truncate">${placeholder}</span>
+                            <span class="btn-sel-badge hidden text-[10px] bg-blue-600 text-white font-black px-2 py-0.5 rounded-full shadow-sm">0</span>
+                        </div>
+                        <i class="fas fa-chevron-down ${iconClasses} transition-transform duration-200"></i>
                     </button>
-                    <div class="multi-select-dropdown glass-panel text-left">
-                        <div class="dropdown-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); selectAllVisible('${filterKey}')">Todos</button>
-                            <button class="action-btn border-l border-white/5" onclick="event.stopPropagation(); clearFilter('${filterKey}')">Limpiar</button>
-                        </div>
-                        <div class="dropdown-search-wrapper">
-                            <input type="text" placeholder="Buscar..." class="dropdown-search">
-                        </div>
-                        <div class="dropdown-list custom-scrollbar max-h-56 overflow-y-auto"></div>
-                    </div>
                 `;
 
+                // Crear el dropdown como portal independiente en document.body para evitar recortes de overflow
+                const dropdown = document.createElement('div');
+                dropdown.className = 'multi-select-dropdown text-left';
+                dropdown.setAttribute('data-target-filter', filterKey);
+                dropdown.innerHTML = `
+                    <div class="dropdown-header-bar">
+                        <span class="dropdown-badge-counter">
+                            <span class="dot-indicator"></span>
+                            <span class="counter-text">0 opciones</span>
+                        </span>
+                        <div class="dropdown-pills-actions">
+                            <button type="button" class="action-pill-btn" onclick="event.stopPropagation(); selectAllVisible('${filterKey}')">
+                                <i class="fas fa-check-double text-[9px]"></i>
+                                <span>Todos</span>
+                            </button>
+                            <button type="button" class="action-pill-btn" onclick="event.stopPropagation(); clearFilter('${filterKey}')">
+                                <i class="fas fa-rotate-left text-[9px]"></i>
+                                <span>Limpiar</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="dropdown-search-box">
+                        <div class="search-field-container">
+                            <i class="fas fa-search search-ico"></i>
+                            <input type="text" placeholder="Buscar..." class="dropdown-search-input" autocomplete="off" spellcheck="false">
+                        </div>
+                    </div>
+                    <div class="dropdown-scroll-list custom-scrollbar"></div>
+                `;
+                document.body.appendChild(dropdown);
+                wrapper._dropdownRef = dropdown;
+
                 const btn = wrapper.querySelector('.multi-select-btn');
-                const dropdown = wrapper.querySelector('.multi-select-dropdown');
-                const search = wrapper.querySelector('.dropdown-search');
+                const search = dropdown.querySelector('.dropdown-search-input');
 
                 btn.onclick = (e) => {
                     e.stopPropagation();
-                    const rect = wrapper.getBoundingClientRect();
-                    const spaceRight = window.innerWidth - rect.left;
-                    if (spaceRight < 300) {
-                        dropdown.style.left = 'auto';
-                        dropdown.style.right = '0';
-                    } else {
-                        dropdown.style.left = '0';
-                        dropdown.style.right = 'auto';
+                    const isOpen = dropdown.classList.contains('active');
+                    closeAllDropdowns();
+                    if (!isOpen) {
+                        positionDropdown(btn, dropdown, isSidebar);
+                        dropdown.classList.add('active');
+                        wrapper.classList.add('is-open');
+                        btn.querySelector('.fa-chevron-down').classList.add('rotate-180');
+                        setTimeout(() => search.focus(), 60);
                     }
-
-                    document.querySelectorAll('.multi-select-dropdown').forEach(d => { if (d !== dropdown) d.classList.remove('active') });
-                    dropdown.classList.toggle('active');
-                    btn.querySelector('.fa-chevron-down').classList.toggle('rotate-180');
                 };
 
                 search.onclick = (e) => e.stopPropagation();
 
                 search.oninput = (e) => {
-                    const val = e.target.value.toLowerCase();
-                    dropdown.querySelectorAll('.checkbox-container').forEach(item => {
-                        const text = item.querySelector('.cb-label').textContent.toLowerCase();
-                        item.style.display = text.includes(val) ? 'flex' : 'none';
+                    const val = e.target.value.toLowerCase().trim();
+                    let matchCount = 0;
+                    dropdown.querySelectorAll('.ms-item-row').forEach(item => {
+                        const text = item.querySelector('.ms-item-label').textContent.toLowerCase();
+                        const isMatch = text.includes(val);
+                        item.style.display = isMatch ? 'flex' : 'none';
+                        if (isMatch) matchCount++;
                     });
+                    
+                    let emptyMsg = dropdown.querySelector('.ms-empty-state');
+                    if (matchCount === 0) {
+                        if (!emptyMsg) {
+                            emptyMsg = document.createElement('div');
+                            emptyMsg.className = 'ms-empty-state';
+                            emptyMsg.innerHTML = '<i class="fas fa-search text-xs opacity-40 mb-1"></i><span>No se encontraron coincidencias</span>';
+                            dropdown.querySelector('.dropdown-scroll-list').appendChild(emptyMsg);
+                        }
+                        emptyMsg.style.display = 'flex';
+                    } else if (emptyMsg) {
+                        emptyMsg.style.display = 'none';
+                    }
                 };
             }
 
-            const list = wrapper.querySelector('.dropdown-list');
+            const dropdown = wrapper._dropdownRef;
+            if (!dropdown) return;
+
+            const list = dropdown.querySelector('.dropdown-scroll-list');
             const btnText = wrapper.querySelector('.btn-text');
-            const selectedArray = selections[filterKey];
+            const badge = wrapper.querySelector('.btn-sel-badge');
+            const counterText = dropdown.querySelector('.counter-text');
+            const selectedArray = selections[filterKey] || [];
+
+            if (counterText) {
+                counterText.textContent = `${items.length} ${filterKey === 'abog' ? 'abogados' : (filterKey === 'revisor' ? 'revisores' : 'opciones')}`;
+            }
 
             list.innerHTML = items.map(item => {
                 const isChecked = selectedArray.includes(item.toUpperCase());
+                const initials = getInitials(item);
+                
                 return `
-                <div class="checkbox-container ${isChecked ? 'checked' : ''}" 
+                <div class="ms-item-row ${isChecked ? 'checked' : ''}" 
                      data-val="${item.toUpperCase()}"
                      onclick="event.stopPropagation(); toggleFilter('${filterKey}', '${item.toUpperCase()}')">
-                    <div class="custom-cb"></div>
-                    <span class="cb-label">${item}</span>
+                    <div class="ms-checkbox">
+                        <i class="fas fa-check ms-checkbox-check"></i>
+                    </div>
+                    ${isPerson ? `<div class="ms-avatar-badge">${initials}</div>` : `<div class="ms-avatar-badge"><i class="fas fa-tag text-[9px]"></i></div>`}
+                    <span class="ms-item-label" title="${item}">${item}</span>
                 </div>
             `}).join('');
 
             if (selectedArray.length === 0) {
                 btnText.textContent = placeholder;
                 btnText.classList.remove('text-blue-400');
+                if (badge) badge.classList.add('hidden');
             } else if (selectedArray.length === items.length) {
                 btnText.textContent = 'TODOS';
                 btnText.classList.add('text-blue-400');
+                if (badge) {
+                    badge.textContent = `${items.length}`;
+                    badge.classList.remove('hidden');
+                }
             } else {
-                btnText.textContent = `${selectedArray.length} SEL.`;
+                btnText.textContent = selectedArray.length === 1 ? selectedArray[0] : `${selectedArray.length} SELECCIONADOS`;
                 btnText.classList.add('text-blue-400');
+                if (badge) {
+                    badge.textContent = `${selectedArray.length}`;
+                    badge.classList.remove('hidden');
+                }
             }
         }
 
